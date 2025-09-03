@@ -1,0 +1,55 @@
+
+CLASES:
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- Tabla clientes: id, nombre, email, teléfono, observaciones, fecha_alta. 
+- Tabla sitios: id, dominio, ip, servidor, cliente_id, notas, estado, ultima_revision, vencimiento_dominio, estado_dominio, fecha_alta. 
+- Tabla logs_chequeos: id, sitio_id, estado (online/offline), tiempo_respuesta, timestamp. 
+- Tabla alertas: id, sitio_id, tipo_alerta (caída, vencimiento), canal, timestamp
+
+
+CLIENTES: id, nombre, email, telefono, observaciones, fecha_alta
+
+SITIOS: id, dominio, ip, servidor, cliente_id, notas, estado, ultima_revision, vencimiento_dominio, estado_dominio, fecha_alta
+
+LOGS_CHEQUEOS: id, sitio_id, estado, tiempo_respuesta, timestamp
+
+ALERTAS: id, id_sitios, tipo_alerta, canal, timestamp.
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+USUARIOS | (socios - Administrador): id, numero_socio, dni, nombre, apellido, email, telefono, direccion, codigo postal, pais, localidad, provincia, id_categoria, Rol(socio - administrador), senial distintiva, id_deuda ( ?¿: el socio ya tiene una deuda asignada que pueda ser nula (no tiene deuda) o hay una deuda que esta asignada al usuario)
+
+
+CATEGORIAS_SOCIOS: id, nombre, idSocio | activo, adherente, vitalicio, honorario, cadete 
+
+
+--- SUPERADMINISTRADOR: id, nombre, logo, direccion, localidad, provincia, CUIT, num_juridico, telefonoS, mail, whatsapp, sitio web, firma_digital, sello de institucion, fecha_ultima_modificacion.
+
+
+CUOTAS: monto, tipo(mensual, bimestral, trimestral, semestral o anual), idSocio
+
+
+PAGOS: id, monto_total, idSocio, forma_pago, fecha_emision, fecha_pago, fecha_limite, estado
+
+
+DEUDAS: monto_extra,  id_socio, fecha_emision
+
+
+COMPROBANTES: id, idSocio, periodo, tipo, monto, renitente, destinatario, fecha_vencimiento, fecha_emision,  Cuit
+
+
+--- MOVIMIENTOS_CAJA: id, monto, metodo, tipo(ingreso - egreso), detalles
+
+
