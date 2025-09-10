@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto cobro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+    <div class="contenedor">
+        <div class="title">
+            <img src="Captura_de_pantalla_1-9-2025_163111_-removebg-preview.png" height="100px">
+        </div>
+        <div class="login">
+            <h2>Iniciar Sesion</h2>
+            <form class="form">
+                <input type="email" id="email" placeholder="  Email" required />
+                <input type="password" id="password" placeholder="  Contraseña" required />
+                <div class="div"><input type="checkbox" class="form-check-input" id="remember"><label class="form-check-label" for="remember">Recordar en este dispositivo</label></div>
+                <button type="submit" class="btn">Ingresar</button>
+                <link class="link" rel="stylesheet" href="." ><a href=".">Olvidaste la contraseña?</a>
+            </form>
+        </div>
+        <p id="loginError" class="error" style="display: none;"></p>
+    </div>
+    <script type="module" src="/js/authService.js"></script>
+    <script type="module" src="/js/main.js"></script>
+</body>
+</html>

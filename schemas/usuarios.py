@@ -9,7 +9,6 @@ class User(BaseModel):
     email: str
     password: str
 
-
 class UsuarioBase(BaseModel):
     nombre_completo: str
     email: EmailStr

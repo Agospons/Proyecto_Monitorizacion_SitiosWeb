@@ -3,40 +3,35 @@
     padding: 0;
 }
 body{
-    overflow-x: hidden;
     height: 100vh;
+    display: grid;
 }
 .header{
-    margin: 50px;
-    padding-top: 20px;
+    margin-top: 50px;
     display: flex;
     justify-content: center;
     flex-direction: row;
 }  
 
 .side-bar-titulo{
+    position: fixed;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    position: fixed;
     background-color: #a1a1a1;
-    overflow: hidden;
     height: 100%;
     width: 22%;
     border-radius: 0 15px 15px 0;
     font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
-
 .side-bar{
     font-size: 20px;
     width: 100%;
     display: flex;
-    margin-left: 60px;
     justify-content: space-between;
     height: 100%;
 }
 .nav{
-    margin-bottom: 60px;
+    margin: 0px 30px; /* espacio para los iconos del side */
     flex-direction: column;
     display: flex;
     justify-content: space-evenly;
@@ -55,24 +50,26 @@ a{
 
 
 
-
 .bienvenido{
     box-shadow: 0 2px 10px rgb(167, 167, 167);
     border-radius: 15px;
     padding: 35px;
     width: 65%;
-    margin: 30px;
+    margin: 30px 60px 30px 30px;
     display: flex;
-    
     font-family: 'Courier New', Courier, monospace;
-    position: absolute;
-    margin-left: 26.5%;
+    margin-left: auto;
+    flex-direction: column;
+    align-items: center;
 }
 
 .bienvenido p{
-    margin: 0 30px;
     font-weight: bold;
     font-size: 40px;
+}
+
+.bienvenido div{
+    font-size: 30px;
 }
 
 .bienvenido i {
@@ -83,23 +80,21 @@ a{
     display: flex;
     justify-content: space-evenly;
     width: 30%;
-    margin-left: auto;
     font-size: 20px;
 }
 
 
 .targetas{
-    width: 71%;
+    width: 69.5%;
+    margin: 30px 60px 30px 30px;
     float: right;
-    margin-right: 3%;
-    margin-top: 170px;
     display: flex;
     justify-content: space-between;
 }
 
 .targetas .resumen {
     background-color: #9accff;
-    padding: 40px;
+    padding: 35px;
     border-radius: 15px;
     width: 450px;
     height: 160px;
@@ -107,11 +102,11 @@ a{
     display: flex;
     justify-content: center;
     flex-direction: column;
-    margin: 10px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     justify-content: space-between;
     box-shadow: 0 2px 10px rgb(167, 167, 167);
 } 
+
 
 .resumen .resumen-titulo{
     display: flex;
@@ -123,7 +118,7 @@ a{
 .resumen .textos, .clientes .textos{
     display: flex;
     flex-direction: column;
-    height: auto;
+
 }
 
 .targetas .clientes{
@@ -136,7 +131,6 @@ a{
     display: flex;
     justify-content: center;
     flex-direction: column;
-    margin: 10px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     justify-content: space-between;
     box-shadow: 0 2px 10px rgb(167, 167, 167);
@@ -150,57 +144,105 @@ a{
 }
 
 
-.alertas{
+
+
+#alertas{
     box-shadow: 0 2px 10px rgb(167, 167, 167);
     border-radius: 15px;
-    padding: 20px;
-    width: 67.5%;
-    margin-top: 450px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    position: fixed;
+    width: 67%;
+    margin: 30px 60px 30px 30px;
+    float: right;
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
     flex-direction: column;
-    margin-left: 26.5%;
     background-color: rgb(255, 255, 127);
 }
 
-.alertas .alertas-titulo{
-    width: 10%;
+#alertas .alertas-titulo{
+    width: 12%;
+    font-size: 20px;
     justify-content: space-around;
     display: flex;
     padding-bottom: 10px;
     align-items: center;
     flex-direction: row;
 }
-.alertas .alertas-div{
+#alertas .alertas-div{
     display: flex;
-    margin: 5px 0 5px 0;
     width: 100%;
 }
 
 
-.usuarios{
+#usuarios{
     box-shadow: 0 2px 10px rgb(167, 167, 167);
     border-radius: 15px;
-    padding: 20px;
-    width: 67.5%;
-    margin-top: 600px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    position: fixed;
+    width: 67%;
+    margin: 30px 60px 30px 30px;
+    float: right;
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
     flex-direction: column;
-    margin-left: 26.5%;
     background-color: rgb(205, 217, 255);
 }
 
-.usuarios .usuarios-titulo{
-    width: 10%;
+#usuarios .usuarios-titulo{
+    width: 25%;
+    font-size: 20px;
     justify-content: space-around;
     display: flex;
     padding-bottom: 10px;
     align-items: center;
     flex-direction: row;
 }
-.usuarios .usuarios-div{
+#usuarios .usuarios-div{
     display: flex;
+    flex-direction: column;
     margin: 5px 0 5px 0;
     width: 100%;
+}
+
+
+#sitios_web{
+    box-shadow: 0 2px 10px rgb(167, 167, 167);
+    border-radius: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 67%;
+    margin: 30px 60px 30px 30px;
+    float: right;
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
+    flex-direction: column;
+    background-color: rgb(255, 205, 222);
+}
+
+#sitios_web .sitios-titulo{
+    width: 28%;
+    font-size: 20px;
+    justify-content: space-around;
+    display: flex;
+    padding-bottom: 10px;
+    align-items: center;
+    flex-direction: row;
+}
+
+#sitios_web .sitios-div{
+    display: flex;
+    flex-direction: column;
+    margin: 5px 0 5px 0;
+    width: 100%;
+}
+
+#btnU, #btnS{
+    width: 80px;
+    height: 30px;
+    border-radius: 6px;
+}
+
+#usuariosTabla td{
+    padding: 5px;
 }

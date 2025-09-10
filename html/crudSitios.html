@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Administrar Sitios Web</title>
+  <link rel="stylesheet" href="style2-1.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <script type="module" src="/js/crudSitios.js"></script>
+</head>
+<body class="body">
+  <header class="cajaHeaders">
+    <h1>Gestión de Sitios</h1>
+    <p id="adminSaludo"></p>
+  </header>
+
+  <main>
+  
+    <section class="listas">
+      <h2>Lista de Sitios registrados</h2>
+      <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>IP</th>
+                <th>ID Cliente </th>
+                <th>Notas</th>
+                <th>Estado</th>
+                <th>Ultima Revision</th>
+                <th>Vencimiento del Dominio</th>
+                <th>Estado del Dominio</th>
+                <th>Fecha Alta</th>
+                <th>Servidor</th>
+                <th>Editar</th>
+            </tr>
+        </thead>
+        <tbody id="sitiosTabla">
+            <tr>
+                <td>
+                    <a href="#" class="btnEdit btn-warning btn-sm edit">Edit</a>
+                    <a href="#" class="btnDelete btn-danger btn-sm delete">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="cajaCrud">
+      <h2>Crear nuevo Sitio Web</h2>
+      <form id="crudForm" autocomplete="off">
+
+        <input type="text" id="dominio" placeholder="Nombre Completo" required minlength="2" maxlength="20" />
+        <input type="number" id="ip" placeholder="IP" required />
+        <input type="number" id="id_cliente" placeholder="ID del Cliente" required>
+        <input type="text" id="notas" placeholder="Notas">
+        <input type="text" id="estado" placeholder="Estado" required>
+        <input type="date" id="ultima_revision" placeholder="Ultima Revision" required>
+        <input type="date" id="vencimiento_dominio" placeholder="Vencimiento del Dominio" required>
+        <input type="text" id="estado_dominio" placeholder="Estado del Dominio">
+        <input type="date" id="fechaAlta" placeholder="Fecha Alta" required>
+        <input type="text" id="servidor" placeholder="Servidor" required />
+        <button type="submit" >Crear Sitio Web</button>
+        <input type="hidden" id="sitioid"/>
+        <button type="button" id="btnActualizar">Actualizar sitio</button>
+        <button type="button" id="btnEliminar">Eliminar sitio</button>
+
+    </form>
+    </section>   
+
+  </main>
+</body>
+</html>
