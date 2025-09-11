@@ -2,6 +2,8 @@ from models.sitios import Sitios as SitiosModel
 from schemas.sitios import Sitios
 from models.usuarios import Usuarios as UsuariosModel
 from fastapi import HTTPException
+from fastapi import HTTPException
+from datetime import date
 
 
 class SitiosService():
@@ -9,6 +11,14 @@ class SitiosService():
        self.db = db
     
     def create_Sitios(self, sitios: Sitios):
+        hoy = date.today()
+        fecha_alta = sitios.fecha_alta
+
+        if fecha_alta is None:
+            raise ValueError("fecha_alta no puede ser nula")
+
+        if fecha_alta > hoy:
+            raise HTTPException(status_code=404, detail="La fecha de alta no puede ser posterior a hoy")
         usuario = self.db.query(UsuariosModel).filter(UsuariosModel.id == sitios.id_cliente).first()
         if not usuario:
             raise HTTPException(status_code=404, detail="Usuario no encontrado")

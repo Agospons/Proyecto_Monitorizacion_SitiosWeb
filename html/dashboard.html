@@ -66,8 +66,6 @@
                 </div>
                 
                 <div class="textos">
-                    <p> </p><p>Sitios Online</p>
-                    <p> </p><p>Sitios Ofline</p>
                     <p> </p><p>Errores</p>
                     <p> </p><p>Problemas</p>
                 </div>
@@ -96,18 +94,20 @@
                 </div>
             </div>
             <div class="sitios-div">
-                <table border="1">
+                <table border="2">
                     <thead>
                     <tr>
                         <th>ID</th>
                         <th>Dominio</th>
+                        <th>IP</th>
                         <th>ID cliente</th>
                         <th>Notas</th>
                         <th>Estado</th>
                         <th>Ultima Revision</th>
                         <th>Vencimiento del Dominio</th>
-                        <th>Servidor</th>
+                        <th>Estado del Dominio</th>
                         <th>Fecha de alta</th>
+                        <th>Servidor</th>
                     </tr>
                     </thead>
                     <tbody id="sitiosTabla"></tbody>
@@ -124,7 +124,7 @@
                 </div>
             </div>
             <div class="usuarios-div">
-                <table border="1">
+                <table border="2">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -154,26 +154,6 @@
         </section>
 
     </main>
-    <script>
-        // const usuario = JSON.parse(localStorage.getItem("usuario"));
-        // if (usuario) {
-        //     document.getElementById("usuarioSaludos").textContent =
-        //         "Bienvenido, " + usuario.nombre_completo;
-        // } else {
-        //     window.location.href = "index.html"; };
-        // document.querySelector(".botonUsuarios").addEventListener("click", () => {
-        //     window.location.href = "crudClientes.html";
-        // });
-
-        // const usuarios = JSON.parse(sessionStorage.getItem("usuario"));
-        // const saludo = document.getElementById("adminSaludo");
-
-        if (usuarios) {
-            document.getElementById("usuarioSaludos").textContent = "Bienvenido, " + usuarios.nombre_completo;
-            saludo.textContent = `Hola admin ${usuario.nombre_completo}  👋`;
-        }else {
-            window.location.href = "index.html"; };
-    </script>
-    
 </body>
 </html>
+

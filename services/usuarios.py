@@ -1,5 +1,8 @@
 from models.usuarios import Usuarios as UsuariosModel
 from schemas.usuarios import Usuarios
+from fastapi import HTTPException
+from datetime import date
+
 
 class UsuariosService():
     
@@ -15,6 +18,14 @@ class UsuariosService():
         return result
 
     def create_usuarios(self, Usuario: Usuarios):
+        hoy = date.today()
+        fecha_alta = Usuario.fecha_alta
+
+        if fecha_alta is None:
+            raise ValueError("fecha_alta no puede ser nula")
+
+        if fecha_alta > hoy:
+            raise HTTPException(status_code=404, detail="La fecha de alta no puede ser posterior a hoy")
         new_usuario = UsuariosModel(**Usuario.model_dump(exclude={"id"}))
         self.db.add(new_usuario)
         self.db.commit()

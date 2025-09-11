@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const tabla = document.getElementById("sitiosTabla");
     const form = document.getElementById("crudForm");
+    
 
 
     // Listar sitios
@@ -27,6 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
             <td>${s.id}</td>
+            <td>${s.dominio}</td>
             <td>${s.ip}</td>
             <td>${s.id_cliente}</td>
             <td>${s.notas}</td>
@@ -41,6 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             `;
 
             tr.dataset.id = s.id;
+            tr.dataset.dominio = s.dominio;
             tr.dataset.ip = s.ip;
             tr.dataset.id_cliente = s.id_cliente;
             tr.dataset.notas = s.notas;
@@ -53,12 +56,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         tr.addEventListener("click", () => {
             document.getElementById("sitioid").value = s.id;
+            document.getElementById("dominio").value = s.dominio;
             document.getElementById("ip").value = s.ip;
             document.getElementById("id_cliente").value = s.id_cliente;
             document.getElementById("notas").value = s.notas;
             document.getElementById("estado").value = s.estado;
             document.getElementById("ultima_revision").value = s.ultima_revision;
-            document.getElementById("vencimiento_domino").value = s.vencimiento_dominio;
+            document.getElementById("vencimiento_dominio").value = s.vencimiento_dominio;
             document.getElementById("estado_dominio").value = s.estado_dominio;
             document.getElementById("fechaAlta").value = s.fecha_alta;
             document.getElementById("servidor").value = s.servidor;
@@ -80,55 +84,59 @@ document.addEventListener("DOMContentLoaded", async () => {
     form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-        const nuevoSitios = {
-            ip: document.getElementById("ip").value,
-            id_cliente: document.getElementById("id_cliente").value,
-            notas: document.getElementById("notas").value,
-            estado: document.getElementById("estado").value,
-            ultima_revision: document.getElementById("ultima_revision").value,
-            vencimiento_dominio: document.getElementById("vencimiento_domino").value,
-            estado_dominio: document.getElementById("estado_dominio").value,
-            fecha_alta: document.getElementById("fechaAlta").value,
-            servidor: document.getElementById("servidor").value
-      };
+    const nuevoSitios = {
+      dominio: document.getElementById("dominio").value,
+      ip: document.getElementById("ip").value,
+      id_cliente: parseInt(document.getElementById("id_cliente").value),
+      notas: document.getElementById("notas").value,
+      estado: document.getElementById("estado").value,
+      ultima_revision: document.getElementById("ultima_revision").value,
+      vencimiento_dominio: document.getElementById("vencimiento_dominio").value, // corregido
+      estado_dominio: document.getElementById("estado_dominio").value,
+      fecha_alta: document.getElementById("fechaAlta").value,
+      servidor: document.getElementById("servidor").value
+    };
 
-        console.log(nuevoSitios)
+      console.log(nuevoSitios)
 
-        try {
-          const res = await fetch("http://127.0.0.1:8000/sitios", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(nuevoSitios)
-          });
+      try {
+        const res = await fetch("http://127.0.0.1:8000/sitios", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(nuevoSitios)
+        });
 
-          if (!res.ok) throw new Error("Error al crear el sitio web");
-
-          alert("Sitio web creado correctamente");
-          form.reset();
-          await cargarUsuarios();
-        } catch (err) {
-          alert("Error: " + err.message);
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error("Error al crear el sitio web: " + errorText);
         }
-      });
+        alert("Sitio web creado correctamente");
+        form.reset();
+        await cargarSitios();
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
+    });
     
-
+    const btnEliminar = document.getElementById("btnEliminar");
 
     
-//     // ACTUALIZAR USUARIOS
+//     // ACTUALIZAR SITIOS WEB
     
     btnActualizar.addEventListener("click", async () => {
     const id = document.getElementById("sitioid").value;
 
     const sitioActualizado = {
         ip: document.getElementById("ip").value,
+        dominio: document.getElementById("dominio").value,
         id_cliente: document.getElementById("id_cliente").value,
         notas: document.getElementById("notas").value,
         estado: document.getElementById("estado").value,
         ultima_revision: document.getElementById("ultima_revision").value,
-        vencimiento_dominio: document.getElementById("vencimiento_domino").value,
+        vencimiento_dominio: document.getElementById("vencimiento_dominio").value,
         estado_dominio: document.getElementById("estado_dominio").value,
         fecha_alta: document.getElementById("fechaAlta").value,
         servidor: document.getElementById("servidor").value
@@ -155,7 +163,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       btnActualizar.style.display = "none";
       btnEliminar.style.display = "none";
       form.querySelector("button[type='submit']").style.display = "inline-block";
-      await cargarUsuarios();
+      await cargarSitios();
     } catch (err) {
       alert("Error: " + err.message);
       console.error(err);
@@ -163,31 +171,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
 
-// //     //  ELIMINAR USUARIOS 
-//     btnEliminar.addEventListener("click", async () => {
-//       const id = document.getElementById("usuarioId").value;
-//       if (!confirm("¿Seguro que querés eliminar este usuario?")) return;
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ELIMINAR USUARIOS 
+    btnEliminar.addEventListener("click", async () => {
+      const id = document.getElementById("sitioid").value;
+      if (!confirm("¿Seguro que querés eliminar este Sitio web?")) return;
 
-//         try {
-//         const res = await fetch(`http://127.0.0.1:8000/usuarios/${id}`, {
-//             method: "DELETE",
-//             headers: {
-//             Authorization: `Bearer ${token}`
-//             }
-//         });
+        try {
+        const res = await fetch(`http://127.0.0.1:8000/sitios/${id}`, {
+            method: "DELETE",
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        });
 
-//         if (!res.ok) throw new Error("Error al eliminar usuario");
+        if (!res.ok) throw new Error("Error al eliminar sitio web");
 
-//         alert("Usuario eliminado");
-//         form.reset();
-//         btnActualizar.style.display = "none";
-//         btnEliminar.style.display = "none";
-//         form.querySelector("button[type='submit']").style.display = "inline-block";
-//         await cargarUsuarios();
-//         } catch (err) {
-//         alert("Error: " + err.message);
-//         }
-//     });
+        alert("Sitio Web eliminado");
+        form.reset();
+        btnActualizar.style.display = "none";
+        btnEliminar.style.display = "none";
+        form.querySelector("button[type='submit']").style.display = "inline-block";
+        await cargarSitios();
+        } catch (err) {
+        alert("Error: " + err.message);
+        }
+    });
   await cargarSitios();
 
     });

@@ -15,7 +15,7 @@ class EstadoO_O(str, Enum):
 
 class Sitios(BaseModel):
     dominio: str
-    ip: int
+    ip: str
     servidor: str
     id_cliente: int
     notas:str
@@ -29,7 +29,7 @@ class Sitios(BaseModel):
 class sitiosOut(BaseModel):
     id: int
     dominio: str
-    ip: int
+    ip: str
     servidor: str
     id_cliente: int
     notas:str

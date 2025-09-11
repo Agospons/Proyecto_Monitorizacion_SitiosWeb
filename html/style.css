@@ -31,16 +31,15 @@ h2{
     align-items: center;
     width: 100%;
 }
-.div, a, .link{
+a, .link{
     color: aliceblue;
     display: flex;
     justify-content: left;
-    margin-top: 10px;
     width: 100%;
 }
-.div{
+/* .div{
     margin-bottom: 10px;
-}
+} */
 
 .login{
     display: flex;
@@ -69,6 +68,7 @@ h2{
 }
 button{
     padding: 10px;
+    margin: 20px;
     border-radius: 6px;
     width: 100%;
     background-color: rgb(169, 193, 234);

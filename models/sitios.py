@@ -20,7 +20,7 @@ class Sitios(Base):
     id = Column(Integer, primary_key=True, index=True)
     dominio = Column(String, nullable=False)
     servidor = Column(String(50))
-    ip = Column(Integer, unique=True)
+    ip = Column(String(20), unique=True)
     id_cliente = Column(Integer, ForeignKey('usuarios.id'), nullable=False)
     notas = Column(String(100))
     estado = Column(Enum(EstadoO_O))
