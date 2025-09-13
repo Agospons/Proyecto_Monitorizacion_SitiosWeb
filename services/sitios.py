@@ -1,9 +1,10 @@
+import requests
 from models.sitios import Sitios as SitiosModel
 from schemas.sitios import Sitios
 from models.usuarios import Usuarios as UsuariosModel
 from fastapi import HTTPException
 from fastapi import HTTPException
-from datetime import date
+from datetime import date, datetime
 
 
 class SitiosService():
@@ -61,4 +62,20 @@ class SitiosService():
         self.db.query(SitiosModel).filter(SitiosModel.id == id).delete()
         self.db.commit()
         return 
+    
+    def chequear_sitio(self, sitio: Sitios):
+        try:
+            r = requests.get(f"http://{sitio.dominio}", timeout=5)
+            sitio.estado = "online" if r.status_code == 200 else "offline"
+        except Exception:
+            sitio.estado = "offline"
+
+        sitio.ultima_revision = datetime.utcnow()
+        self.db.commit()
+        return sitio
+    def chequear_todos(self):
+        sitios = self.db.query(SitiosModel).all()
+        for sitio in sitios:
+            self.chequear_sitio(sitio)
+        return sitios
     

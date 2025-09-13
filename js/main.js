@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (token) {
 
-        fetch("http://127.0.0.1:8000/socios", {
+        fetch("http://127.0.0.1:8000/usuarios", {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {

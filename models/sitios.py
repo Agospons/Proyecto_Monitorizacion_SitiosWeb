@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import ForeignKey, Column, Integer, String, DATETIME, DATE, Enum
+from sqlalchemy import ForeignKey, Column, Integer, String, DATETIME, DATE, Enum, TIME
 from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
 from models.usuarios import Usuarios
@@ -18,7 +18,7 @@ class Sitios(Base):
     __tablename__ = "sitios"
 
     id = Column(Integer, primary_key=True, index=True)
-    dominio = Column(String, nullable=False)
+    dominio = Column(String(50), nullable=False)
     servidor = Column(String(50))
     ip = Column(String(20), unique=True)
     id_cliente = Column(Integer, ForeignKey('usuarios.id'), nullable=False)

@@ -6,21 +6,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const saludo = document.getElementById("usuarioSaludos");
 
     if (usuario) {
-      saludo.textContent = `Bienvenido, ${usuario.nombre_completo}`;
+        saludo.textContent = `Bienvenido, ${usuario.nombre_completo}`;
     }
 
     const statsContainer = document.querySelector(".textos");
-    const usuaTabla = document.getElementById("usuariosTabla")
     const token = sessionStorage.getItem("token");
-    
-    
-
-    // Cambiar adminSaludo por usuarioSaludo
-    // const saludo = document.getElementById("usuarioSaludo");
-
-    // if (usuario) {
-    //     saludo.textContent = `Hola ${usuario.nombre_completo} 👋`;
-    // }
 
     try {
         const res = await fetch("http://127.0.0.1:8000/dashboard/admin", {
@@ -32,9 +22,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const data = await res.json();
 
     statsContainer.innerHTML = `
-        <p>Sitios Online:  ${data.sitios_online}</p>
-        <p>Sitios Offline:  ${data.sitios_offline}</p>
-        <p>Sitios con Domino Vencido:  ${data.dominio_vencido}</p>
+        <p>✅Sitios Online:  ${data.sitios_online}</p>
+        <p>❌Sitios Offline:  ${data.sitios_offline}</p>
+        <p> ⚠ Sitios con Domino Vencido:  ${data.dominio_vencido}</p>
         
     `;
     } catch (err) {
@@ -51,6 +41,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.location.href = "crudSitios.html";
     });
 
+    document.getElementById("cerrar").addEventListener("click", () => {
+        window.location.href = "index.html";
+    });
 
 
     const tablaUsuarios = document.getElementById("usuariosTabla");
@@ -109,10 +102,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     const tablaSitios = document.getElementById("sitiosTabla");
         // Listar todos los sitios
-    async function cargarSitios() {
+    async function cargarSitios() { ///////Carga todos los sitios
     try {
         const res = await fetchConAuth("http://127.0.0.1:8000/sitios");
         if (!res.ok) throw new Error("No se pudieron obtener sitios");
@@ -142,7 +135,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
         // Listar últimos 5 sitios registrados
-    async function cargarUltimosSitios() {
+    async function cargarUltimosSitios() {  ////Carga los sitios pero solo los que estan ofline
     try {
         const res = await fetchConAuth("http://127.0.0.1:8000/dashboard/admin");
         if (!res.ok) throw new Error("No se pudieron obtener los últimos sitios");
@@ -160,8 +153,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             <td>${s.ip}</td>
             <td>${s.id_cliente}</td>
             <td>${s.notas}</td>
-            <td>${s.estado}</td>
-            <td>${s.ultima_revision}</td>
+            <td style="color:${s.estado === "online" ? "green" : "red"}">
+            ${s.estado}
+            </td><td>${s.ultima_revision}</td>
             <td>${s.vencimiento_dominio}</td>
             <td>${s.estado_dominio}</td>
             <td>${s.fecha_alta}</td>
@@ -176,11 +170,60 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
 
+
+    async function cargarSitiosOffline() { ///Muestra los sitios offline
+    try {
+        const res = await fetch("http://127.0.0.1:8000/sitios");
+        if (!res.ok) throw new Error("No se pudieron obtener sitios");
+        const data = await res.json();
+
+        // Filtrar solo los sitios offline
+        const offline = data.filter(s => s.estado.toLowerCase() === "offline");
+
+        const tabla = document.getElementById("sitiosTabla");
+        tabla.innerHTML = "";
+
+        if (offline.length === 0) {
+        tabla.innerHTML = `
+            <tr>
+            <td colspan="11" style="text-align:center; color:green;">
+                ✅ Todos los sitios están online
+            </td>
+            </tr>
+        `;
+        return;
+        }
+
+        offline.forEach(s => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${s.id}</td>
+            <td>${s.dominio}</td>
+            <td>${s.ip}</td>
+            <td>${s.id_cliente}</td>
+            <td>${s.notas}</td>
+            <td style="color:red"> ❌${s.estado}</td>
+            <td>${s.ultima_revision}</td>
+            <td>${s.vencimiento_dominio}</td>
+            <td>${s.estado_dominio}</td>
+            <td>${s.fecha_alta}</td>
+            <td>${s.servidor}</td>
+        `;
+        tabla.appendChild(tr);
+        });
+    } catch (err) {
+        console.error("Error al cargar sitios offline:", err);
+    }
+    }
+
     await cargarSitios();
     await cargarUltimosSitios();
     await cargarUsuarios();
     await cargarUltimosUsuarios();
+    cargarSitiosOffline();
 
-    }
-    
-);      
+    setInterval(cargarSitiosOffline, 30000);
+
+
+
+});      

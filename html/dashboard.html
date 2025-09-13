@@ -9,9 +9,8 @@
     <script type="module" src="/js/dashboard.js"></script>
 </head>
 <body>
-    <!-- <header class="cajaHeaders">
-        <p id="usuarioSaludo"></p>
-    </header> -->
+
+    
     <main>
         <section class="side-bar-titulo">
             <div class="header">
@@ -22,7 +21,7 @@
                     <li class="nav-link">
                         <a href="" class="inicio">
                             <i class="fa-solid fa-house"></i>
-                            <a href="">Inicio</a>
+                            <a href="#bienvenido">Inicio</a>
                         </a>
                     </li>
                     <li class="nav-link">
@@ -40,20 +39,20 @@
                     <li class="nav-link">
                         <a href="" class="reportes">
                             <i class="fa-solid fa-triangle-exclamation"></i>
-                            <a href="#alertas-div">Alertas</a>
+                            <a href="#alertas">Alertas</a>
                         </a>
                     </li>
                     <li class="nav-link">
                         <a href="" class="cerrar">
                             <i class="fas fa-sign-out-alt"></i>
-                            <a href="login.html">Cerrar Sesion</a>
+                            <a href="#" id="cerrar">Cerrar Sesion</a>
                         </a>
                     </li>
                 </ul>
             </div>
         </section>
 
-        <section class="bienvenido">
+        <section id="bienvenido">
             <p id="usuarioSaludo"> Panel de Navegacion 🚀</p> 
             <div id="usuarioSaludos"></div>
         </section>
@@ -66,8 +65,7 @@
                 </div>
                 
                 <div class="textos">
-                    <p> </p><p>Errores</p>
-                    <p> </p><p>Problemas</p>
+                    
                 </div>
             </div>
 
@@ -83,6 +81,18 @@
             </div>
 
             
+        </section>
+
+        <section id="alertas">
+            <div class="adiv">
+                <div class="alertas-titulo">
+                    <i class="fa-solid fa-triangle-exclamation"></i><h3>Alertas</h3>
+                </div>
+                <div class="alertas-div">
+                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt placeat sint nam. Alias assumenda cum laboriosam, dolores, ex doloribus ut incidunt recusandae ipsam eos magni. Eius, nam. Aperiam, facilis quam?</p>
+                </div>
+
+            </div>
         </section>
 
          <section id="sitios_web">
@@ -141,17 +151,7 @@
 
         </section>
 
-        <section id="alertas">
-            <div class="adiv">
-                <div class="alertas-titulo">
-                    <i class="fa-solid fa-triangle-exclamation"></i><h3>Alertas</h3>
-                </div>
-                <div class="alertas-div">
-                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt placeat sint nam. Alias assumenda cum laboriosam, dolores, ex doloribus ut incidunt recusandae ipsam eos magni. Eius, nam. Aperiam, facilis quam?</p>
-                </div>
-
-            </div>
-        </section>
+        
 
     </main>
 </body>

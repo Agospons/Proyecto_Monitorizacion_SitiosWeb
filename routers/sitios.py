@@ -29,10 +29,8 @@ def get_sitios(db = Depends(get_database_session)):
     return resultado
 
 
-
-
 @sitios_routers.get("/sitios/{id}", tags=["Sitios"], response_model=sitiosOut, status_code=status.HTTP_200_OK)
-def get_sitios(id : int, db = Depends(get_database_session)):
+def get_sitios_id(id : int, db = Depends(get_database_session)):
     resultado = SitiosService(db).get_sitios_id(id)
     if not resultado:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitio no encontrado")
@@ -57,3 +55,9 @@ def eliminar_sitio(id: int, db=Depends(get_database_session)):
     SitiosService(db).delete_sitios(id)
     return JSONResponse(status_code=200, content={"message": "Se ha eliminado el sitio web"})
 
+@sitios_routers.get("/sitios", tags=["Sitios"], response_model=List[sitiosOut], status_code=201)
+def get_sitios_online(sitios: Sitios, db=Depends(get_database_session)):
+    resultado = SitiosService(db).chequear_todos(sitios)
+    # if not resultado:
+    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitio web no encontrado")
+    return resultado

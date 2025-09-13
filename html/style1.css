@@ -13,6 +13,10 @@ body{
     flex-direction: row;
 }  
 
+.usuarios-div, .sitios-div{
+    font-size: 15px;
+}
+
 .side-bar-titulo{
     position: fixed;
     display: flex;
@@ -50,7 +54,7 @@ a{
 
 
 
-.bienvenido{
+#bienvenido{
     box-shadow: 0 2px 10px rgb(167, 167, 167);
     border-radius: 15px;
     padding: 35px;
@@ -63,20 +67,20 @@ a{
     align-items: center;
 }
 
-.bienvenido p{
+#bienvenido p{
     font-weight: bold;
     font-size: 40px;
 }
 
-.bienvenido div{
+#bienvenido div{
     font-size: 30px;
 }
 
-.bienvenido i {
+#bienvenido i {
     font-size: 30px;
 }
 
-.bienvenido .icons{
+#bienvenido .icons{
     display: flex;
     justify-content: space-evenly;
     width: 30%;

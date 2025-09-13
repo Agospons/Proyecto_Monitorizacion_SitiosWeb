@@ -7,6 +7,7 @@ from routers.usuarios import usuarios_router
 from routers.sitios import sitios_routers
 from routers.log_chequeos import logeos_routers
 from routers.alertas import alertas_routers
+from routers.dashboard import dashboard_router
 
 app = FastAPI()
 app.title = "Gestion Sitios"
@@ -18,6 +19,7 @@ app.include_router(usuarios_router)
 app.include_router(sitios_routers)
 app.include_router(logeos_routers)
 app.include_router(alertas_routers)
+app.include_router(dashboard_router)
 
 Base.metadata.create_all(bind=engine)
 

@@ -43,6 +43,7 @@ class DashboardService:
     )
 
 
+
         # self.db.query(UsuariosModel)
         # .order_by(UsuariosModel.fecha_alta.desc())
         # .limit(limite)
