@@ -4,6 +4,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const token = sessionStorage.getItem("token");
     const usuario = JSON.parse(sessionStorage.getItem("usuario"));
     const saludo = document.getElementById("adminSaludo");
+    
+    document.getElementById("btnHistorial").addEventListener("click", () => {
+      window.location.href = "historialSitios.html";
+    });
 
     if (usuario) {
       saludo.textContent = `Hola admin ${usuario.nombre_completo}  👋`;
@@ -38,8 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             <td>${s.estado_dominio}</td>
             <td>${s.fecha_alta}</td>
             <td>${s.servidor}</td>
-            <a href="#" class="btn btn-warning btn-sm edit">Edit</a>
-            <a href="#" class="btn btn-danger btn-sm delete">Delete</a>
+            <button type="button" class="btn btn-warning btn-sm" id="btnHistorial">Ver Historial</button>
             `;
 
             tr.dataset.id = s.id;
@@ -91,13 +94,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       notas: document.getElementById("notas").value,
       estado: document.getElementById("estado").value,
       ultima_revision: document.getElementById("ultima_revision").value,
-      vencimiento_dominio: document.getElementById("vencimiento_dominio").value, // corregido
+      vencimiento_dominio: document.getElementById("vencimiento_dominio").value,
       estado_dominio: document.getElementById("estado_dominio").value,
       fecha_alta: document.getElementById("fechaAlta").value,
       servidor: document.getElementById("servidor").value
     };
-
-      console.log(nuevoSitios)
+          console.log(nuevoSitios)
 
       try {
         const res = await fetch("http://127.0.0.1:8000/sitios", {
@@ -119,12 +121,45 @@ document.addEventListener("DOMContentLoaded", async () => {
       } catch (err) {
         alert("Error: " + err.message);
       }
+    /////////////////////////////////////////////////////
+    //// CREAR LOGS AL CREAR EL SITIO WEB
+    const sitioCreado = await resSitio.json();
+    const ahora = new Date();
+    const timestampHora = ahora.toTimeString().split(" ")[0]; 
+
+    const nuevoLog = {
+        id_sitio: sitioCreado.id,
+        estado: sitioCreado.estado,
+        tiempo_respuesta: 0, 
+        timestamp: timestampHora 
+    };
+    
+    const resLog = await fetch("http://127.0.0.1:8000/logeos", { 
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(nuevoLog)
+      });
+
+      if (!resLog.ok) {
+          const errorText = await resLog.text();
+          throw new Error("Error al crear el log: " + errorText);
+      }
+
+      alert("Sitio y log creados correctamente");
+      form.reset();
+      await cargarSitios();
+
+
     });
     
     const btnEliminar = document.getElementById("btnEliminar");
 
     
-//     // ACTUALIZAR SITIOS WEB
+/////////////////////////////////////////////////////// 
+// ACTUALIZAR SITIOS WEB
     
     btnActualizar.addEventListener("click", async () => {
     const id = document.getElementById("sitioid").value;
@@ -168,11 +203,44 @@ document.addEventListener("DOMContentLoaded", async () => {
       alert("Error: " + err.message);
       console.error(err);
     }
+
+
+    ////////////////////////////////////////////////
+    ///// CREAR LOG AL ACTUALIZAR SITIO
+    const sitioCreado = await resSitio.json();
+    const ahora = new Date();
+    const timestampHora = ahora.toTimeString().split(" ")[0]; // HH:MM:SS
+
+    const nuevoLog = {
+        id_sitio: sitioCreado.id,
+        estado: sitioCreado.estado,
+        tiempo_respuesta: 0, 
+        timestamp: timestampHora
+    };
+    
+    const resLog = await fetch("http://127.0.0.1:8000/logeos", { 
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(nuevoLog)
+      });
+
+      if (!resLog.ok) {
+          const errorText = await resLog.text();
+          throw new Error("Error al crear el log: " + errorText);
+      }
+
+      alert("Sitio y log actualizados correctamente");
+      form.reset();
+      await cargarSitios();
+
   });
 
 
   //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//  ELIMINAR USUARIOS 
+//  ELIMINAR SITIOS 
     btnEliminar.addEventListener("click", async () => {
       const id = document.getElementById("sitioid").value;
       if (!confirm("¿Seguro que querés eliminar este Sitio web?")) return;

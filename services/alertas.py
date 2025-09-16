@@ -18,14 +18,6 @@ class AlertasServices():
         self.db.commit()
         return nueva_alerta
     
-    # def crear_logeo(self, logeo: Log_chequeo):
-    #     sitio = self.db.query(SitiosModel).filter(SitiosModel.id == logeo.id_sitio).first()
-    #     if not sitio:
-    #         raise HTTPException(status_code=404, detail="Sitio web no encontrado")
-    #     nuevolog = LogModel(**logeo.dict())
-    #     self.db.add(nuevolog)
-    #     self.db.commit()
-    #     return nuevolog
 
     
     def get_alertas(self):

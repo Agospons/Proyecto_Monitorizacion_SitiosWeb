@@ -33,7 +33,7 @@ def get_log(db=Depends(get_database_session)):
 
 
 @logeos_routers.get("/logeos/{id}", tags=["Logs"], response_model=logOut, status_code=status.HTTP_200_OK)
-def get_log(id:int, db=Depends(get_database_session)):
+def get_log_id(id:int, db=Depends(get_database_session)):
     resultado = LogService(db).get_log_id(id)
     if not resultado:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Log no encontrado")

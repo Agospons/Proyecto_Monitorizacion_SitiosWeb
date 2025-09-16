@@ -240,7 +240,43 @@ a{
     width: 100%;
 }
 
-#btnU, #btnS{
+
+#historiales{
+    box-shadow: 0 2px 10px rgb(167, 167, 167);
+    border-radius: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 70%;
+    margin: 30px 35px 30px 30px;
+    float: right;
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
+    flex-direction: column;
+    background-color: rgb(161, 231, 231);
+}
+
+#historiales .historial-titulo{
+    width: 60%;
+    font-size: 20px;
+    justify-content: space-around;
+    display: flex;
+    padding-bottom: 10px;
+    align-items: center;
+    flex-direction: row;
+}
+.form #id_sitio{
+    padding: 5px 10px ;
+}
+
+#historiales .historial-div{
+    display: flex;
+    flex-direction: column;
+    margin: 5px 0 5px 0;
+    width: 100%;
+}
+
+
+#btnU, #btnS, #btnH{
     width: 80px;
     height: 30px;
     border-radius: 6px;

@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
-from datetime import date, datetime
+from datetime import date, datetime, time
 from enum import Enum
 
 
@@ -36,6 +36,15 @@ class SitiosResumen(BaseModel):
 
 
 
+class LogsResumen(BaseModel):
+    id: int
+    id_sitio: int
+    estado: EstadoO_O
+    tiempo_respuesta: Optional[float] = None
+    timestamp: time
+
+    
+
 class DashboardStats(BaseModel):
     sitios_online: int
     sitios_offline: int
@@ -44,8 +53,7 @@ class DashboardStats(BaseModel):
     
     web_no_online: List[SitiosResumen]
 
-    #errores: int
-    # problemas: int
+    
+class Dash(BaseModel):
+    historial_sitios: List[LogsResumen]
 
-    # errores: List[UsuarioResumen]
-    # problemas: Optional[PaqueteResumen]

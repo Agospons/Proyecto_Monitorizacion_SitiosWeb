@@ -31,7 +31,8 @@ h2{
     align-items: center;
     width: 100%;
 }
-a, .link{
+a, .links{
+    text-decoration: none;
     color: aliceblue;
     display: flex;
     justify-content: left;

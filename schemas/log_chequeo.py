@@ -11,14 +11,15 @@ class EstadoO_O(str, Enum):
 class Log_chequeo(BaseModel):
     id_sitio: int
     estado: EstadoO_O
-    tiempo_respuesta: time
+    tiempo_respuesta: float
     timestamp: time
 
-
+    class Config:
+        from_attributes = True
 class logOut(BaseModel):
     id: int
     id_sitio: int
     estado: EstadoO_O
-    tiempo_respuesta: time
+    tiempo_respuesta: float
     timestamp: time
     

@@ -1,10 +1,18 @@
-import requests
+
 from models.sitios import Sitios as SitiosModel
 from schemas.sitios import Sitios
+from models.log_chequeo import Log_chequeo as LogoModels
+from schemas.log_chequeo import Log_chequeo, logOut
+import requests
 from models.usuarios import Usuarios as UsuariosModel
 from fastapi import HTTPException
-from fastapi import HTTPException
-from datetime import date, datetime
+from datetime import date, datetime, time
+import sqlite3
+from http.client import HTTPConnection
+from urllib.request import urlopen
+import urllib.request
+
+from urllib.error import URLError, HTTPError
 
 
 class SitiosService():
@@ -26,8 +34,18 @@ class SitiosService():
         ip = self.db.query(SitiosModel).filter(SitiosModel.ip == sitios.ip).first()
         if ip:
             raise HTTPException(status_code=404, detail="La direccion IP ya esta registrada")
+        
         nuevo_sitio = SitiosModel(**sitios.dict())
         self.db.add(nuevo_sitio)
+        self.db.commit()
+
+        log = LogoModels (
+            id_sitio = nuevo_sitio.id,
+            estado = sitios.estado,
+            tiempo_respuesta = None,
+            timestamp = datetime.now()
+        )
+        self.db.add(log)
         self.db.commit()
         return nuevo_sitio
 
@@ -55,6 +73,15 @@ class SitiosService():
         sitio.vencimiento_dominio = data.vencimiento_dominio
         sitio.estado_dominio = data.estado_dominio
         sitio.fecha_alta = data.fecha_alta
+        
+        log = LogoModels (
+            id_sitio = sitio.id,
+            estado = data.estado,
+            tiempo_respuesta = None,
+            timestamp = datetime.now()
+        )
+        self.db.add(log)
+        
         self.db.commit()
         return 
     
@@ -63,19 +90,30 @@ class SitiosService():
         self.db.commit()
         return 
     
-    def chequear_sitio(self, sitio: Sitios):
-        try:
-            r = requests.get(f"http://{sitio.dominio}", timeout=5)
-            sitio.estado = "online" if r.status_code == 200 else "offline"
-        except Exception:
-            sitio.estado = "offline"
 
-        sitio.ultima_revision = datetime.utcnow()
-        self.db.commit()
-        return sitio
-    def chequear_todos(self):
-        sitios = self.db.query(SitiosModel).all()
-        for sitio in sitios:
-            self.chequear_sitio(sitio)
-        return sitios
-    
+    def chequear_sitio(self,  id:int):
+        sitios = self.db.query(SitiosModel).filter(SitiosModel.id == id).first()
+        if not sitios:
+            raise HTTPException(status_code=404, detail="Sitio Web no encontrado")
+
+        url = requests.get(sitios.dominio)
+
+        if not url.startswith("http"):
+            url = "http://" + url
+        try:
+            respuesta = urlopen(url, timeout=5)
+            codigo = respuesta.getcode()
+            if codigo == 200:
+                sitios.estado == "online"
+                sitios.ultima_revision = datetime.utcnow()
+                self.db.commit()
+            else:
+                sitios.estado == "offline"
+                sitios.ultima_revision = datetime.utcnow()
+                self.db.commit()
+        except Exception as e:
+            return {"Error: {e}"}
+        except HTTPError as e:
+            return(f"Error HTTP: {e.code}")
+
+

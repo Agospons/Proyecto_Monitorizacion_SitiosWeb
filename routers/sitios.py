@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 from fastapi import Depends, Path, Query,  HTTPException, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
@@ -11,6 +11,8 @@ from passlib.context import CryptContext
 from security.jwt_manager import create_token
 from schemas.sitios import Sitios, sitiosOut
 from models.sitios import Sitios as SitiosModel
+from models.log_chequeo import Log_chequeo as LogoModels
+from schemas.log_chequeo import Log_chequeo, logOut
 
 from datetime import date
 hoy = date.today()
@@ -55,9 +57,15 @@ def eliminar_sitio(id: int, db=Depends(get_database_session)):
     SitiosService(db).delete_sitios(id)
     return JSONResponse(status_code=200, content={"message": "Se ha eliminado el sitio web"})
 
-@sitios_routers.get("/sitios", tags=["Sitios"], response_model=List[sitiosOut], status_code=201)
-def get_sitios_online(sitios: Sitios, db=Depends(get_database_session)):
-    resultado = SitiosService(db).chequear_todos(sitios)
-    # if not resultado:
-    #     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sitio web no encontrado")
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+
+@sitios_routers.get("/sitios/{id}", tags=["Sitios"], response_model=dict, status_code=200)
+def verificar_sitio(id: int, db=Depends(get_database_session)):
+    servicio = SitiosService(db)
+    resultado = servicio.chequear_sitio(id)
+    if not resultado:
+        raise HTTPException(status_code=404, detail="Sitio no encontrado")
+
     return resultado

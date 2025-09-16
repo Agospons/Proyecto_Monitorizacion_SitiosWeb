@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, Integer, Enum,ForeignKey, Time
+from sqlalchemy import Column, Integer, Enum,ForeignKey, TIME, FLOAT, TIMESTAMP
 from sqlalchemy.orm import relationship
 from models.sitios import Sitios
 from enum import Enum as PyEnum
@@ -17,7 +17,7 @@ class Log_chequeo(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True, nullable=False)
     id_sitio = Column(Integer, ForeignKey('sitios.id'))
     estado = Column(Enum(EstadoO_O))
-    tiempo_respuesta = Column(Time)
-    timestamp = Column(Time)
+    tiempo_respuesta = Column(FLOAT)
+    timestamp = Column(TIME)
 
     sitios = relationship(Sitios)

@@ -30,8 +30,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             <td>${u.telfono}</td>
             <tr>${u.fecha_alta}</td>
             <td>${u.observaciones}</td>
-            <a href="#" class="btn btn-warning btn-sm edit">Edit</a>
-            <a href="#" class="btn btn-danger btn-sm delete">Delete</a>
             `;
 
             tr.dataset.id = u.id;
@@ -45,8 +43,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           tr.addEventListener("click", () => {
               document.getElementById("usuarioId").value = u.id;
               document.getElementById("nombre").value = u.nombre_completo;
-              document.getElementById("telefono").value = u.telfono;
               document.getElementById("email").value = u.correo;
+              document.getElementById("telefono").value = u.telfono;
               document.getElementById("fechaAlta").value = u.fecha_alta;
               document.getElementById("observaciones").value = u.observaciones;
               document.getElementById("password").value = u.password;

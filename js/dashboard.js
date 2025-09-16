@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         tablaUsuarios.appendChild(tr);
         });
     } catch (err) {
-        alert("Error al cargar usuarios: " + err.message);
+        alert("Error al cargar usuarios");
     }
     }
 
@@ -97,15 +97,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         tablaUltimos.appendChild(tr);
         });
     } catch (err) {
-        alert("Error al cargar últimos usuarios: " + err.message);
+        alert(err.message);
     }
     }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     const tablaSitios = document.getElementById("sitiosTabla");
-        // Listar todos los sitios
-    async function cargarSitios() { ///////Carga todos los sitios
+    
+    async function cargarSitios() { //////////// Carga todos los sitios /////////
     try {
         const res = await fetchConAuth("http://127.0.0.1:8000/sitios");
         if (!res.ok) throw new Error("No se pudieron obtener sitios");
@@ -134,8 +134,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     }
 
-        // Listar últimos 5 sitios registrados
-    async function cargarUltimosSitios() {  ////Carga los sitios pero solo los que estan ofline
+    
+    async function cargarUltimosSitios() {  ///////// Carga los sitios pero solo los que estan ofline /////////
     try {
         const res = await fetchConAuth("http://127.0.0.1:8000/dashboard/admin");
         if (!res.ok) throw new Error("No se pudieron obtener los últimos sitios");
@@ -171,13 +171,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 
-    async function cargarSitiosOffline() { ///Muestra los sitios offline
+    async function cargarSitiosOffline() { ///////// Muestra los sitios offline /////////
     try {
         const res = await fetch("http://127.0.0.1:8000/sitios");
         if (!res.ok) throw new Error("No se pudieron obtener sitios");
         const data = await res.json();
 
-        // Filtrar solo los sitios offline
         const offline = data.filter(s => s.estado.toLowerCase() === "offline");
 
         const tabla = document.getElementById("sitiosTabla");
@@ -215,6 +214,123 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.error("Error al cargar sitios offline:", err);
     }
     }
+
+    async function cargarUltimosUsuarios() {
+    try {
+        const res = await fetchConAuth("http://127.0.0.1:8000/dashboard/admin");
+        if (!res.ok) throw new Error("No se pudieron obtener los últimos usuarios");
+        const data = await res.json();
+
+        const ultimos = data.ultimos_usuarios;
+
+        const tablaUltimos = document.getElementById("usuariosTabla");
+        tablaUltimos.innerHTML = "";
+        ultimos.forEach(u => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${u.id}</td>
+            <td>${u.nombre_completo}</td>
+            <td>${u.email}</td>
+            <td>${u.telefono}</td>
+            <td>${u.fecha_alta}</td>
+            <td>${u.observaciones ?? ""}</td>
+        `;
+        tablaUltimos.appendChild(tr);
+        });
+    } catch (err) {
+        alert(err.message);
+    }
+   
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    const tablaSitios = document.getElementById("sitiosTabla");
+    
+    async function cargarSitios() { //////////// Carga todos los sitios /////////
+    try {
+        const res = await fetchConAuth("http://127.0.0.1:8000/sitios");
+        if (!res.ok) throw new Error("No se pudieron obtener sitios");
+        const data = await res.json();
+
+        tablaSitios.innerHTML = "";
+        data.forEach(s => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${s.id}</td>
+            <td>${s.dominio}</td>
+            <td>${s.ip}</td>
+            <td>${s.id_cliente}</td>
+            <td>${s.notas}</td>
+            <td>${s.estado}</td>
+            <td>${s.ultima_revision}</td>
+            <td>${s.vencimiento_dominio}</td>
+            <td>${s.estado_dominio}</td>
+            <td>${s.fecha_alta}</td>
+            <td>${s.servidor}</td>
+        `;
+        tablaSitios.appendChild(tr);
+        });
+    } catch (err) {
+        alert("Error al cargar sitios: " + err.message);
+    }
+}
+}
+
+    const btnHistorial = document.getElementById("btnH");
+    const inputIdSitio = document.getElementById("id_sitio");
+    const historialTabla = document.getElementById("historialTabla");
+
+    // Función para obtener historial desde el backend
+    async function cargarHistorial(idSitio) {
+        try {
+        const token = sessionStorage.getItem("token");
+
+        const res = await fetch(`http://127.0.0.1:8000/dashboard/admin/${idSitio}`, {
+            method: "GET",
+            headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            throw new Error("Error al obtener historial: " + errorText);
+        }
+
+        const data = await res.json();
+
+        historialTabla.innerHTML = "";
+
+        data.historial_sitios.forEach(log => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+            <td>${log.id}</td>
+            <td>${log.id_sitio}</td>
+            <td>${log.estado}</td>
+            <td>${log.tiempo_respuesta ?? "-"}</td>
+            <td>${log.timestamp}</td>
+            `;
+            historialTabla.appendChild(tr);
+        });
+
+        if (data.historial_sitios.length === 0) {
+            historialTabla.innerHTML = `<tr><td colspan="5">No hay historial para este sitio</td></tr>`;
+        }
+
+        } catch (err) {
+        alert(err.message);
+        }
+    }
+
+    btnHistorial.addEventListener("click", () => {
+        const idSitio = inputIdSitio.value.trim();
+        if (!idSitio) {
+        alert("Por favor ingrese un ID de sitio");
+        return;
+        }
+        cargarHistorial(idSitio);
+    });
 
     await cargarSitios();
     await cargarUltimosSitios();

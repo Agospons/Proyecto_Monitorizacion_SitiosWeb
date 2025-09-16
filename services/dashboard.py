@@ -4,6 +4,10 @@ from datetime import date
 from models.usuarios import Usuarios as UsuariosModel
 from models.alertas import Alertas as AlertasModel
 from models.sitios import Sitios as SitiosModel
+from models.log_chequeo import Log_chequeo as LogModel
+from schemas.log_chequeo import Log_chequeo
+from fastapi import HTTPException
+
 
 # Sitios Online
 # Sitios Ofline
@@ -42,25 +46,17 @@ class DashboardService:
         .all()
     )
 
+    def historial_sitios(self, id:int, limite: int = 5):
+        sitio = self.db.query(SitiosModel).filter(SitiosModel.id == id).first()
+        if not sitio:
+            raise HTTPException(status_code=404, detail="Sitio web no encontrado")
 
-
-        # self.db.query(UsuariosModel)
-        # .order_by(UsuariosModel.fecha_alta.desc())
-        # .limit(limite)
-        # .all()
+        result = (
+            self.db.query(LogModel)
+            .filter(LogModel.id_sitio == id)
+            .limit(limite)
+            .all()
+        )
+        return result
     
     
-    # def top_usuarios_por_reservas(self, limite: int = 5):
-    #     return (
-    #         self.db.query(
-    #             UsuariosModel.id,
-    #             UsuariosModel.nombre,
-    #             UsuariosModel.apellido,
-    #             func.count(ReservasModel.id).label("total_reservas")
-    #         )
-    #         .join(ReservasModel)
-    #         .group_by(UsuariosModel.id)
-    #         .order_by(func.count(ReservasModel.id).desc())
-    #         .limit(limite)
-    #         .all()
-    #     )

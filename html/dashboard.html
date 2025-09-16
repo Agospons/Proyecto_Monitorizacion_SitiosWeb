@@ -25,19 +25,25 @@
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="" class="pagos">
+                        <a href="" class="clientes">
                             <i class="fa-solid fa-users"></i>
                             <a href="#usuarios">Clientes</a>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="" class="facturas">
+                        <a href="" class="historial">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <a href="#historiales">Historiales</a>
+                        </a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="" class="historial">
                             <i class="fa-solid fa-globe"></i>
                             <a href="#sitios_web">Sitios Web</a>
                         </a>
                     </li>
                     <li class="nav-link">
-                        <a href="" class="reportes">
+                        <a href="" class="alertas">
                             <i class="fa-solid fa-triangle-exclamation"></i>
                             <a href="#alertas">Alertas</a>
                         </a>
@@ -151,7 +157,33 @@
 
         </section>
 
-        
+        <section id="historiales">
+            <div class="historial-titulo">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <h3>Historial de Sitios Web</h3>
+                <form action="" class="form">
+                    <input type="number" id="id_sitio" placeholder="Ingrese el ID del sitio a conocer historial">
+                </form>
+                <div class="botonHistorial">
+                    <button id="btnH">Buscar</button>
+                </div>
+            </div>
+            <div class="historial-div">
+                <table border="2">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ID del Sitio Web</th>
+                        <th>Estado</th>
+                        <th>Tiempo de Respuesta</th>
+                        <th>Time-stamp</th>
+                    </tr>
+                    </thead>
+                    <tbody id="historialTabla"></tbody>
+                </table>
+            </div>
+        </section>
+       
 
     </main>
 </body>
