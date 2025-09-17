@@ -277,7 +277,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 }
 
     const btnHistorial = document.getElementById("btnH");
-    const inputIdSitio = document.getElementById("id_sitio");
+    const idSitio = document.getElementById("id_sitio");
     const historialTabla = document.getElementById("historialTabla");
 
     // Función para obtener historial desde el backend
@@ -324,14 +324,162 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     btnHistorial.addEventListener("click", () => {
-        const idSitio = inputIdSitio.value.trim();
-        if (!idSitio) {
+        const idS = idSitio.value.trim();
+        if (!idS) {
         alert("Por favor ingrese un ID de sitio");
         return;
         }
-        cargarHistorial(idSitio);
+        cargarHistorial(idS);
     });
 
+
+
+
+    
+    ////// controlar todos los sitios web
+    
+    const btnVerificar = document.getElementById("button");
+    
+    btnVerificar.addEventListener("click", async () => {
+        await verificarTodosLosSitios();
+    });
+
+    async function verificarTodosLosSitios() {
+        try {
+
+            const originalText = btnVerificar.textContent;
+            btnVerificar.textContent = "⏳ Verificando..."; //////// modifica el boton al clickear
+            btnVerificar.disabled = true;
+
+            const token = sessionStorage.getItem("token");
+            const res = await fetch(`http://127.0.0.1:8000/sitios/verificar/todos`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error("Error al verificar sitios: " + errorText);
+            }
+
+            const resultados = await res.json();
+            
+            ////// muestra resultados con alerta estilizada
+            mostrarResultadosVerificacion(resultados);
+            
+            //// actualiza sitios
+            await cargarSitiosOffline();
+            
+            ///// actualiza el resumen
+            await actualizarResumen();
+
+        } catch (err) {
+            console.error("Error en verificación:", err);
+            mostrarAlerta(`❌ Error: ${err.message}`, "error");
+        } finally {
+            // Restaurar botón
+            btnVerificar.textContent = originalText;
+            btnVerificar.disabled = false;
+        }
+    }
+
+    function mostrarResultadosVerificacion(resultados) {
+        const online = resultados.filter(s => s.estado === "online").length;
+        const offline = resultados.filter(s => s.estado === "offline").length;
+        const total = resultados.length;
+
+        let mensaje = `✅ Verificación completada\n`;
+        mensaje += `📊 Total: ${total} sitios\n`;
+        mensaje += `🟢 Online: ${online}\n`;
+        mensaje += `🔴 Offline: ${offline}`;
+
+        if (offline > 0) {
+            mensaje += `\n\n❌ Sitios offline:\n`;
+            resultados.filter(s => s.estado === "offline").forEach(sitio => {
+                mensaje += `• ${sitio.dominio} - ${sitio.mensaje_error || 'Sin conexión'}\n`;
+            });
+        }
+
+        mostrarAlerta(mensaje, offline > 0 ? "warning" : "success");
+    }
+
+    function mostrarAlerta(mensaje, tipo = "info") {
+        
+        const alertaDiv = document.createElement('div');
+        alertaDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-family: Arial, sans-serif;
+            z-index: 10000;
+            max-width: 400px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            white-space: pre-line;
+        `;
+
+        // Colores según el tipo
+        const colores = {
+            success: '#4CAF50',
+            error: '#f44336',
+            warning: '#ff9800',
+            info: '#2196F3'
+        };
+
+        alertaDiv.style.backgroundColor = colores[tipo] || colores.info;
+        
+        alertaDiv.textContent = mensaje;
+        document.body.appendChild(alertaDiv);
+
+        
+        setTimeout(() => {
+            alertaDiv.remove();
+        }, 5000);
+    }
+
+    async function actualizarResumen() {
+        try {
+            const token = sessionStorage.getItem("token");
+            const res = await fetch("http://127.0.0.1:8000/dashboard/admin", {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                const statsContainer = document.querySelector(".textos");
+                
+                statsContainer.innerHTML = `
+                    <p>✅Sitios Online:  ${data.sitios_online}</p>
+                    <p>❌Sitios Offline:  ${data.sitios_offline}</p>
+                    <p>⚠ Sitios con Dominio Vencido:  ${data.dominio_vencido}</p>
+                `;
+            }
+        } catch (err) {
+            console.error("Error actualizando estadísticas:", err);
+        }
+    }
+
+
+
+        
+        btnHistorial.addEventListener("click", () => {
+            const idS = idSitio.value.trim();
+            if (!idS) {
+                alert("Por favor ingrese un ID de sitio");
+                return;
+            }
+            cargarHistorial(idS);
+        });
+    
+    
+        setInterval(cargarSitiosOffline, 30000);
     await cargarSitios();
     await cargarUltimosSitios();
     await cargarUsuarios();

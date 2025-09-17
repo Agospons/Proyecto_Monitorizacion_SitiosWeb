@@ -1,5 +1,6 @@
 from database import Base
-from sqlalchemy import Column, Integer, String, Enum, DATE
+from sqlalchemy import Column, Integer, String, Enum, DATE, ForeignKey
+from sqlalchemy.orm import relationship
 
 class Usuarios(Base):
 
@@ -13,7 +14,4 @@ class Usuarios(Base):
     fecha_alta = Column(DATE)
     password = Column(String(1000))
 
-
-    # paquete_id = Column(Integer, ForeignKey('paquetes.id'), nullable=False)
-    # usuario = relationship(Usuarios)
-    # paquete = relationship(Paquetes)
+    sitios = relationship("Sitios", back_populates="usuario")

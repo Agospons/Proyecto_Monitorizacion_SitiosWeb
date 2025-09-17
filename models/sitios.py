@@ -29,6 +29,5 @@ class Sitios(Base):
     estado_dominio = Column(Enum(Estadodominio))
     fecha_alta = Column(DATE)
 
-    usuarios = relationship(Usuarios)
-#
+    usuario = relationship("Usuarios", back_populates="sitios")
 # SITIOS: id, dominio, ip, servidor, cliente_id, notas, estado, ultima_revision, vencimiento_dominio, estado_dominio, fecha_alta

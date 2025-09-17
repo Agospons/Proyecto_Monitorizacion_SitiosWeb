@@ -5,10 +5,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const usuario = JSON.parse(sessionStorage.getItem("usuario"));
     const saludo = document.getElementById("adminSaludo");
     
-    document.getElementById("btnHistorial").addEventListener("click", () => {
-      window.location.href = "historialSitios.html";
-    });
-
     if (usuario) {
       saludo.textContent = `Hola admin ${usuario.nombre_completo}  👋`;
     }
@@ -17,7 +13,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const tabla = document.getElementById("sitiosTabla");
     const form = document.getElementById("crudForm");
     
-
 
     // Listar sitios
     async function cargarSitios() {
@@ -42,7 +37,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             <td>${s.estado_dominio}</td>
             <td>${s.fecha_alta}</td>
             <td>${s.servidor}</td>
-            <button type="button" class="btn btn-warning btn-sm" id="btnHistorial">Ver Historial</button>
             `;
 
             tr.dataset.id = s.id;
@@ -121,6 +115,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       } catch (err) {
         alert("Error: " + err.message);
       }
+
     /////////////////////////////////////////////////////
     //// CREAR LOGS AL CREAR EL SITIO WEB
     const sitioCreado = await resSitio.json();
@@ -128,10 +123,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     const timestampHora = ahora.toTimeString().split(" ")[0]; 
 
     const nuevoLog = {
-        id_sitio: sitioCreado.id,
-        estado: sitioCreado.estado,
-        tiempo_respuesta: 0, 
-        timestamp: timestampHora 
+      id_sitio: sitioCreado.id,
+      estado: sitioCreado.estado,
+      tiempo_respuesta: 0, 
+      timestamp: timestampHora 
     };
     
     const resLog = await fetch("http://127.0.0.1:8000/logeos", { 

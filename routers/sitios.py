@@ -61,11 +61,26 @@ def eliminar_sitio(id: int, db=Depends(get_database_session)):
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
-@sitios_routers.get("/sitios/{id}", tags=["Sitios"], response_model=dict, status_code=200)
-def verificar_sitio(id: int, db=Depends(get_database_session)):
-    servicio = SitiosService(db)
-    resultado = servicio.chequear_sitio(id)
-    if not resultado:
-        raise HTTPException(status_code=404, detail="Sitio no encontrado")
 
-    return resultado
+@sitios_routers.get("/sitios/verificar/todos", tags=["Sitios"], response_model=List[dict], status_code=200)
+def verificar_todos_los_sitios(db = Depends(get_database_session)):
+    try:
+        servicio = SitiosService(db)
+        resultado = servicio.chequear_todos_los_sitios()
+        return resultado
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al verificar sitios: {str(e)}")
+
+
+@sitios_routers.get("/sitios/verificar/{id}", tags=["Sitios"], response_model=dict, status_code=200)
+def verificar_sitio(id: int, db = Depends(get_database_session)):
+    try:
+        servicio = SitiosService(db)
+        resultado = servicio.chequear_sitio(id)
+        return resultado
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al verificar sitio: {str(e)}")
+
+
