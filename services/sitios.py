@@ -180,7 +180,6 @@ class SitiosService():
         self.db.commit()
         return {"message": "Sitio actualizado correctamente"}
     
-
     def delete_sitios(self, id: int):
         sitios = self.db.query(SitiosModel).filter(SitiosModel.id == id).first()
         if sitios:
@@ -188,215 +187,306 @@ class SitiosService():
             self.db.commit()
             return 
 
-    
+
+
     def chequear_sitio(self, id: int):
-        ### verificar si el id del sitio a chequear es valido
-        sitio = self.db.query(SitiosModel).filter(SitiosModel.id == id).first()
-        if not sitio:
-            raise HTTPException(status_code=404, detail="Sitio Web no encontrado")
-
-        ### controla la url
-        url = sitio.dominio.strip()
-        if not url.startswith(('http://', 'https://')):
-            url = 'https://' + url
-
-        tiempo_respuesta = None
-        estado = EstadoO_O.offline
-        status_code = 0
-        error_message = None
-
-
         try:
-            start_time = time.time()  
-            response = requests.get(
-                url, 
-                timeout=10,
-                allow_redirects=True,
-                headers={
-                    'User-Agent': 'Mozilla/5.0 (Website Monitoring Bot)',
-                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
-                },
-                verify=False
-            )
-            end_time = time.time()
-            
-            tiempo_respuesta = int((end_time - start_time) * 1000) ### crear el tiempo de respuesta segun el momento en el que empieza y cuadno decuelve el resultafo
-            status_code = response.status_code ### codigo de respuesta
-            
-            
-            if 200 <= response.status_code < 400:
-                estado = EstadoO_O.online
-            else:
-                estado = EstadoO_O.offline
-                error_message = f"Código HTTP: {status_code}" ### en caso de que el sitio lance un error 
-                
-        except requests.exceptions.Timeout:
-            estado = EstadoO_O.offline
-            error_message = "Timeout: El sitio no respondió a tiempo (10s)" ## lanza error en caso de que demore demaciado en verificar el sitio
-            
-        except requests.exceptions.SSLError:
-            
-            try: ### en caso de que el link ingresado falle en https
-                if url.startswith('https://'):
-                    http_url = url.replace('https://', 'http://')
-                    start_time = time.time()
-                    response = requests.get(http_url, timeout=8, verify=False)
-                    end_time = time.time()
-                    tiempo_respuesta = int((end_time - start_time) * 1000)
-                    status_code = response.status_code
-                    
-                    if 200 <= response.status_code < 400:
-                        estado = EstadoO_O.online
-                        error_message = "Funciona con HTTP (HTTPS falló)"
-                    else:
-                        estado = EstadoO_O.offline
-                        error_message = f"HTTP falló con código: {status_code}"
-                else:
-                    estado = EstadoO_O.offline
-                    error_message = "Error SSL/TLS"
-                    
-            except Exception as fallback_error:
-                estado = EstadoO_O.offline
-                error_message = f"Error SSL y fallback HTTP: {str(fallback_error)}"
-        
-        #### errores tipicos en caso de el control del link falle
-        except requests.exceptions.ConnectionError as e:
-            estado = EstadoO_O.offline
-            error_message = f"Error de conexión: {str(e)}"
-            
-        except requests.exceptions.RequestException as e:
-            estado = EstadoO_O.offline
-            error_message = f"Error en la solicitud: {str(e)}"
-            
-        except Exception as e:
-            estado = EstadoO_O.offline
-            error_message = f"Error inesperado: {str(e)}"
-        
-        try: ### actualiza la bd en sitios - alertas - log
-            sitio.estado = estado
-            sitio.ultima_revision = datetime.now()
-            self.db.commit()
+            sitio = self.db.query(SitiosModel).filter(SitiosModel.id == id).first()
+            if not sitio:
+                raise HTTPException(status_code=404, detail="Sitio Web no encontrado")
 
-            if estado == "offline":
-                hoy = datetime.now().date()
-            
-                alerta = AlertasModel (
-                    id_sitio = sitio.id,
-                    timestamp = datetime.now(),
-                    canal = "update",
-                    tipo_alertas = "Caida", 
-                    fecha_alerta = hoy
-                )
-                self.db.add(alerta)
-                self.db.commit()
-        except Exception as db_error:
-            error_message = f"{error_message} | Error BD: {str(db_error)}"
+            url = sitio.dominio.strip()
+            if not url.startswith(('http://', 'https://')):
+                url = 'https://' + url
 
-        ### crea el log 
-        try:
-            log = LogoModels (
-            id_sitio = sitio.id,
-            estado = estado.value,
-            tiempo_respuesta = tiempo_respuesta,
-            timestamp = datetime.now()
-            )
-            
-            self.db.add(log)
-            self.db.commit()
+            tiempo_respuesta = None
+            estado = "offline"
+            status_code = 0
+            error_message = None
 
-            
-        except Exception as log_error:
-            pass
-
-
-        hoy = datetime.now().date()
-        for sitios in sitio:
-            if sitios.estado == "offline":
-                alerta = AlertasModel(
-                    id_sitio = sitios.id,
-                    timestamp = datetime.now(),
-                    canal = "Sistema",  
-                    tipo_alertas = "Caida" , 
-                    fecha_alerta = hoy
-                )
-                self.db.add(alerta)
-            else:
-                self.db.query(AlertasModel).filter(AlertasModel.id_sitio == sitios.id).delete()
-                self.db.commit()
-
-        for sitios in sitio:
-            if sitio.vencimiento_dominio <= hoy:
-                alerta = AlertasModel(
-                    id_sitio = sitio.id,
-                    timestamp = datetime.now(),
-                    canal = "Sistema",  
-                    tipo_alertas = "Vencimiento" , 
-                    fecha_alerta = hoy
-                )
-                self.db.add(alerta)
-            else:
-                self.db.query(AlertasModel).filter(AlertasModel.id_sitio == sitios.id).delete()
-                self.db.commit()
-
-        return {
-            "id_sitio": id,
-            "dominio": sitio.dominio,
-            "url_verificada": url,
-            "estado": estado.value,
-            "codigo_respuesta": status_code,
-            "tiempo_respuesta": f"{tiempo_respuesta} ms" if tiempo_respuesta else "N/A",
-            "mensaje_error": error_message,
-            "timestamp": datetime.now().isoformat()
-        }
-
-
-    def chequear_todos_los_sitios(self):
-        sitios = self.db.query(SitiosModel).all()
-        resultados = []
-        
-        print(f"🔍 Verificando {len(sitios)} sitios...")
-        
-        for i, sitio in enumerate(sitios, 1):
             try:
-                resultado = self.chequear_sitio(sitio.id)
-                resultados.append(resultado)
+                start_time = time.time()  
+                response = requests.get(
+                    url, 
+                    timeout=10,
+                    allow_redirects=True,
+                    headers={
+                        'User-Agent': 'Mozilla/5.0 (Website Monitoring Bot)',
+                        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
+                    },
+                    verify=False
+                )
+                end_time = time.time()
+                
+                tiempo_respuesta = int((end_time - start_time) * 1000)
+                status_code = response.status_code
+                
+                if 200 <= response.status_code < 400:
+                    estado = "online"
+                else:
+                    estado = "offline"
+                    error_message = f"Código HTTP: {status_code}"
+                    
+            except requests.exceptions.Timeout:
+                estado = "offline"
+                error_message = "Timeout: El sitio no respondió a tiempo (10s)"
+                
+            except requests.exceptions.SSLError:
+                try:
+                    if url.startswith('https://'):
+                        http_url = url.replace('https://', 'http://')
+                        start_time = time.time()
+                        response = requests.get(http_url, timeout=8, verify=False)
+                        end_time = time.time()
+                        tiempo_respuesta = int((end_time - start_time) * 1000)
+                        status_code = response.status_code
+                        
+                        if 200 <= response.status_code < 400:
+                            estado = "online"
+                            error_message = "Funciona con HTTP (HTTPS falló)"
+                        else:
+                            estado = "offline"
+                            error_message = f"HTTP falló con código: {status_code}"
+                    else:
+                        estado = "offline"
+                        error_message = "Error SSL/TLS"
+                        
+                except Exception as fallback_error:
+                    estado = "offline"
+                    error_message = f"Error SSL y fallback HTTP: {str(fallback_error)}"
+            
+            except requests.exceptions.ConnectionError as e:
+                estado = "offline"
+                error_message = f"Error de conexión: {str(e)}"
+                
+            except requests.exceptions.RequestException as e:
+                estado = "offline"
+                error_message = f"Error en la solicitud: {str(e)}"
                 
             except Exception as e:
-                resultados.append({
-                    "id_sitio": sitio.id,
-                    "dominio": sitio.dominio,
-                    "estado": "error",
-                    "mensaje_error": str(e),
-                    "timestamp": datetime.now().isoformat()
-                })
+                estado = "offline"
+                error_message = f"Error inesperado: {str(e)}"
         
-        hoy = datetime.now().date()
-        for sitio in sitios:
-            if sitio.estado == "offline":
-                alerta = AlertasModel(
-                    id_sitio = sitio.id,
-                    timestamp = datetime.now(),
-                    canal = "Sistema",  
-                    tipo_alertas = "Caida" , 
-                    fecha_alerta = hoy
-                )
-                self.db.add(alerta)
-            else:
-                self.db.query(AlertasModel).filter(AlertasModel.id_sitio == sitio.id).delete()
+            try:
+                sitio.estado = estado
+                sitio.ultima_revision = datetime.now()
                 self.db.commit()
 
-        for sitio in sitios:
-            if sitios.vencimiento_dominio <= hoy:
-                alerta = AlertasModel(
-                    id_sitio = sitios.id,
-                    timestamp = datetime.now(),
-                    canal = "Sistema",  
-                    tipo_alertas = "Vencimiento" , 
-                    fecha_alerta = hoy
-                )
-                self.db.add(alerta)
-            else:
-                self.db.query(AlertasModel).filter(AlertasModel.id_sitio == sitio.id).delete()
-                self.db.commit()
+                if estado == "offline":
+                    hoy = datetime.now().date()
+                    alerta_existente = self.db.query(AlertasModel).filter(
+                        AlertasModel.id_sitio == sitio.id,
+                        AlertasModel.tipo_alertas == "Caida",
+                        AlertasModel.fecha_alerta == hoy
+                    ).first()
+                    
+                    if not alerta_existente:
+                        alerta = AlertasModel(
+                            id_sitio=sitio.id,
+                            timestamp=datetime.now(),
+                            canal="Verificación",
+                            tipo_alertas="Caida", 
+                            fecha_alerta=hoy,
+                            detalles=error_message
+                        )
+                        self.db.add(alerta)
+                        self.db.commit()
+                self._actualizar_alertas_automaticas()
+        
+            except Exception as db_error:
+                return(f"Error actualizando BD: {db_error}")
 
-        return resultados
+            try:
+                log = LogoModels(
+                    id_sitio=sitio.id,
+                    estado=estado,
+                    tiempo_respuesta=tiempo_respuesta,
+                    timestamp=datetime.now()
+                )
+                self.db.add(log)
+                self.db.commit()
+            except Exception as log_error:
+                return(f"Error creando log: {log_error}")
+
+            return {
+                "id_sitio": id,
+                "dominio": sitio.dominio,
+                "url_verificada": url,
+                "estado": estado,
+                "codigo_respuesta": status_code,
+                "tiempo_respuesta": tiempo_respuesta,
+                "mensaje_error": error_message,
+                "timestamp": datetime.now().isoformat()
+                
+            }
+
+        except Exception as e:
+            return(f"💥 Error en chequear_sitio para ID {id}: {e}")
+            
+
+    def chequear_todos_los_sitios(self):
+        try:
+            sitios = self.db.query(SitiosModel).all()
+            resultados = []
+            
+            for i, sitio in enumerate(sitios, 1):
+                try:
+
+                    resultado = self.chequear_sitio(sitio.id)
+                    resultados.append(resultado)
+                    
+                    return(f"✅ {sitio.dominio}: {resultado.get('estado', 'N/A')}")
+                    
+                except Exception as e:
+                    error_msg = f"Error verificando {sitio.dominio}: {str(e)}"
+                
+                    resultados.append({
+                        "id_sitio": sitio.id,
+                        "dominio": sitio.dominio,
+                        "estado": "error",
+                        "mensaje_error": error_msg,
+                        "timestamp": datetime.now().isoformat()
+                    })
+
+            self._actualizar_alertas_automaticas()
+            
+            return resultados
+            
+        except Exception as e:
+            return [{"error": str(e)}]
+            
+    def _actualizar_alertas_automaticas(self):
+        try:
+            hoy = datetime.now().date()
+            sitios = self.db.query(SitiosModel).all()
+                
+            for sitio in sitios:
+                if sitio.estado == "offline":
+                    alerta_existente = self.db.query(AlertasModel).filter(
+                        AlertasModel.id_sitio == sitio.id,
+                        AlertasModel.tipo_alertas == "Caida",
+                        AlertasModel.fecha_alerta == hoy
+                    ).first()
+                    
+                    if not alerta_existente:
+                        nueva_alerta = AlertasModel(
+                            id_sitio=sitio.id,
+                            timestamp=datetime.now(),
+                            canal="Sistema",
+                            tipo_alertas="Caida",
+                            fecha_alerta=hoy,
+                            detalles=f"Sitio {sitio.dominio} no responde"
+                        )
+                        self.db.add(nueva_alerta)
+                else:
+                    eliminadas = self.db.query(AlertasModel).filter(
+                        AlertasModel.id_sitio == sitio.id,
+                        AlertasModel.tipo_alertas == "Caida"
+                    ).delete()
+            
+                if sitio.vencimiento_dominio and sitio.vencimiento_dominio <= hoy:
+                    alerta_existente = self.db.query(AlertasModel).filter(
+                        AlertasModel.id_sitio == sitio.id,
+                        AlertasModel.tipo_alertas == "Vencimiento",
+                        AlertasModel.fecha_alerta == hoy
+                    ).first()
+                    
+                    if not alerta_existente:
+                        nueva_alerta = AlertasModel(
+                            id_sitio=sitio.id,
+                            timestamp=datetime.now(),
+                            canal="Sistema",
+                            tipo_alertas="Vencimiento",
+                            fecha_alerta=hoy,
+                            detalles=f"Dominio {sitio.dominio} vence el {sitio.vencimiento_dominio}"
+                        )
+                        self.db.add(nueva_alerta)
+                else:
+                    eliminadas = self.db.query(AlertasModel).filter(
+                        AlertasModel.id_sitio == sitio.id,
+                        AlertasModel.tipo_alertas == "Vencimiento"
+                    ).delete()
+            
+            self.db.commit()
+            
+        except Exception as e:
+            self.db.rollback()
+            try:
+                if not isinstance(sitios, (list, tuple)):
+                    if hasattr(sitios, 'id'):
+                        # Si es un solo objeto, convertirlo a lista
+                        sitios = [sitios]
+                    else:
+                        return
+                
+                hoy = datetime.now().date()
+                alertas_creadas = 0
+                alertas_eliminadas = 0
+
+                for sitio in sitios:
+                    try:
+                        if not hasattr(sitio, 'id'):
+                            continue
+
+                        sitio_actualizado = self.db.query(SitiosModel).filter(
+                            SitiosModel.id == sitio.id
+                        ).first()
+                        
+                        if not sitio_actualizado:
+                            continue
+
+
+                        alerta_caida = self.db.query(AlertasModel).filter(
+                            AlertasModel.id_sitio == sitio_actualizado.id,
+                            AlertasModel.tipo_alertas == "Caida"
+                        ).first()
+
+                        if sitio_actualizado.estado == "offline":
+                            if not alerta_caida:
+                                nueva_alerta = AlertasModel(
+                                    id_sitio=sitio_actualizado.id,
+                                    timestamp=datetime.now(),
+                                    canal="Sistema",
+                                    tipo_alertas="Caida",
+                                    fecha_alerta=hoy,
+                                    detalles=f"Sitio {sitio_actualizado.dominio} no responde"
+                                )
+                                self.db.add(nueva_alerta)
+                                alertas_creadas += 1
+                        else:
+                            if alerta_caida:
+                                self.db.delete(alerta_caida)
+                                alertas_eliminadas += 1
+
+                        alerta_vencimiento = self.db.query(AlertasModel).filter(
+                            AlertasModel.id_sitio == sitio_actualizado.id,
+                            AlertasModel.tipo_alertas == "Vencimiento"
+                        ).first()
+
+                        if (sitio_actualizado.vencimiento_dominio and 
+                            sitio_actualizado.vencimiento_dominio <= hoy):
+                            if not alerta_vencimiento:
+                                nueva_alerta = AlertasModel(
+                                    id_sitio=sitio_actualizado.id,
+                                    timestamp=datetime.now(),
+                                    canal="Sistema",
+                                    tipo_alertas="Vencimiento",
+                                    fecha_alerta=hoy,
+                                    detalles=f"Dominio {sitio_actualizado.dominio} vence el {sitio_actualizado.vencimiento_dominio}"
+                                )
+                                self.db.add(nueva_alerta)
+                                alertas_creadas += 1
+                        else:
+                            if alerta_vencimiento:
+                                self.db.delete(alerta_vencimiento)
+                                alertas_eliminadas += 1
+                                
+                    except Exception as e:
+                        continue
+
+                self.db.commit()
+                
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                self.db.rollback()
