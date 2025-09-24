@@ -25,7 +25,6 @@ def obtener_dashboard_stats(db=Depends(get_database_session)):
         "alertas": service.return_alertas()
     }
 
-
 @dashboard_router.get("/dashboard/admin/{id}", tags=["Dashboard"], response_model=Dash, dependencies=[Depends(JWTBearer())])
 def sitiosWebHistorial(id: int, db=Depends(get_database_session)):
     logs = DashboardService(db).historial_sitios(id)

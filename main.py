@@ -8,9 +8,6 @@ from routers.sitios import sitios_routers
 from routers.log_chequeos import logeos_routers
 from routers.alertas import alertas_routers
 from routers.dashboard import dashboard_router
-# from routers.notificaciones import noti_router
-# from services.noficaciones import job_recurrente
-
 
 app = FastAPI()
 app.title = "Gestion Sitios"
@@ -30,11 +27,6 @@ Base.metadata.create_all(bind=engine)
 def message():
     return HTMLResponse('<h1>Gestion de sitios web</h1>')
 
-# from fastapi.middleware.cors import CORSMiddleware
-# @app.get("/")
-# def root():
-#     return {"status": "ok"}
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],   
@@ -42,3 +34,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=False,  
+        workers=1
+    )
