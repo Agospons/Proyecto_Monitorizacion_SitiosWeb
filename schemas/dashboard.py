@@ -43,6 +43,18 @@ class LogsResumen(BaseModel):
     tiempo_respuesta: Optional[float] = None
     timestamp: time
 
+class TipoAlerta(str, Enum):
+    caida = "Caida"
+    vencimiento = "Vencimiento"
+
+class AlertasResumen(BaseModel):
+    id:int
+    id_sitio: int
+    tipo_alertas: TipoAlerta
+    canal: str
+    timestamp: time
+    fecha_alerta: date
+
     
 
 class DashboardStats(BaseModel):
@@ -52,7 +64,7 @@ class DashboardStats(BaseModel):
     ultimos_usuarios: List[UsuariosResumen]
     
     web_no_online: List[SitiosResumen]
-
+    alertas: List[AlertasResumen]
     
 class Dash(BaseModel):
     historial_sitios: List[LogsResumen]

@@ -20,19 +20,19 @@ hoy = date.today()
 logeos_routers = APIRouter()
 
 
-@logeos_routers.post("/logeos", tags=["Logs"], response_model=dict, status_code=201)
+@logeos_routers.post("/logeos", tags=["Logs"], response_model=dict, status_code=201, dependencies=[Depends(JWTBearer())])
 def crear_logs(log:Log_chequeo, db=Depends(get_database_session)) -> dict:
     LogService(db).crear_logeo(log)
     return JSONResponse(status_code=201, content={"message": "Se ha registrado el log"})
 
 
-@logeos_routers.get("/logeos", tags=["Logs"], response_model=List[logOut], status_code=status.HTTP_200_OK)
+@logeos_routers.get("/logeos", tags=["Logs"], response_model=List[logOut], status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def get_log(db=Depends(get_database_session)):
     result = LogService(db).get_logeo()
     return result
 
 
-@logeos_routers.get("/logeos/{id}", tags=["Logs"], response_model=logOut, status_code=status.HTTP_200_OK)
+@logeos_routers.get("/logeos/{id}", tags=["Logs"], response_model=logOut, status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def get_log_id(id:int, db=Depends(get_database_session)):
     resultado = LogService(db).get_log_id(id)
     if not resultado:
@@ -40,7 +40,7 @@ def get_log_id(id:int, db=Depends(get_database_session)):
     return resultado
 
 
-@logeos_routers.put("/logeos/{id}", tags=["Logs"], response_model=dict, status_code=201)
+@logeos_routers.put("/logeos/{id}", tags=["Logs"], response_model=dict, status_code=201, dependencies=[Depends(JWTBearer())])
 def actualizar_log(id: int, log: Log_chequeo,  db=Depends(get_database_session)):
     resultado = LogService(db).get_log_id(id)
     if not resultado:
@@ -49,7 +49,7 @@ def actualizar_log(id: int, log: Log_chequeo,  db=Depends(get_database_session))
     return JSONResponse(status_code=200, content={"message": "Se ha modificado el log"})
 
 
-@logeos_routers.delete("/logeos/{id}", tags=["Logs"], response_model=dict, status_code=201)
+@logeos_routers.delete("/logeos/{id}", tags=["Logs"], response_model=dict, status_code=201, dependencies=[Depends(JWTBearer())])
 def eliminar_log(id: int, db=Depends(get_database_session)):
     resultado: LogModel = db.query(LogModel).filter(LogModel.id == id).first()
     if not resultado:

@@ -1,16 +1,17 @@
 from pydantic import BaseModel
-from datetime import time
+from datetime import time, date
 from enum import Enum
 
 class TipoAlerta(str, Enum):
-    caida = "caida"
-    vencimiento = "vencimiento"
+    caida = "Caida"
+    vencimiento = "Vencimiento"
 
 class Alertas(BaseModel):
     id_sitio: int
     tipo_alertas: TipoAlerta
     canal: str
     timestamp: time
+    fecha_alerta: date
 
 class alertasOut(BaseModel):
     id: int
@@ -18,3 +19,4 @@ class alertasOut(BaseModel):
     tipo_alertas: TipoAlerta
     canal: str
     timestamp: time
+    fecha_alerta: date

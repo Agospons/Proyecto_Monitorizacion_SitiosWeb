@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       fecha_alta: document.getElementById("fechaAlta").value,
       servidor: document.getElementById("servidor").value
     };
-          console.log(nuevoSitios)
+      console.log(nuevoSitios)
 
       try {
         const res = await fetch("http://127.0.0.1:8000/sitios", {
@@ -155,86 +155,75 @@ document.addEventListener("DOMContentLoaded", async () => {
     
 /////////////////////////////////////////////////////// 
 // ACTUALIZAR SITIOS WEB
-    
     btnActualizar.addEventListener("click", async () => {
-    const id = document.getElementById("sitioid").value;
+      const id = document.getElementById("sitioid").value;
 
-    const sitioActualizado = {
-        ip: document.getElementById("ip").value,
-        dominio: document.getElementById("dominio").value,
-        id_cliente: document.getElementById("id_cliente").value,
-        notas: document.getElementById("notas").value,
-        estado: document.getElementById("estado").value,
-        ultima_revision: document.getElementById("ultima_revision").value,
-        vencimiento_dominio: document.getElementById("vencimiento_dominio").value,
-        estado_dominio: document.getElementById("estado_dominio").value,
-        fecha_alta: document.getElementById("fechaAlta").value,
-        servidor: document.getElementById("servidor").value
-    };
+      const sitioActualizado = {
+          dominio: document.getElementById("dominio").value,
+          ip: document.getElementById("ip").value,
+          id_cliente: parseInt(document.getElementById("id_cliente").value),
+          notas: document.getElementById("notas").value,
+          estado: document.getElementById("estado").value,
+          ultima_revision: document.getElementById("ultima_revision").value,
+          vencimiento_dominio: document.getElementById("vencimiento_dominio").value,
+          estado_dominio: document.getElementById("estado_dominio").value,
+          fecha_alta: document.getElementById("fechaAlta").value,
+          servidor: document.getElementById("servidor").value
+      };
 
-    
-    try {
-      const res = await fetch(`http://127.0.0.1:8000/sitios/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
-        },
-        body: JSON.stringify(sitioActualizado)
-      });
+      try {
+          const res = await fetch(`http://127.0.0.1:8000/sitios/${id}`, {
+              method: "PUT",
+              headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}` 
+              },
+              body: JSON.stringify(sitioActualizado)
+          });
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error("Error al actualizar usuario: " + errorText);
+          if (!res.ok) {
+              const errorText = await res.text();
+              throw new Error("Error al actualizar Sitio Web: " + errorText);
+          }
+
+          const ahora = new Date();
+          const timestampHora = ahora.toTimeString().split(" ")[0];
+
+          const nuevoLog = {
+            id_sitio: parseInt(id),
+            estado: sitioActualizado.estado,
+            tiempo_respuesta: 0,
+            timestamp: timestampHora
+          };
+
+          const resLog = await fetch("http://127.0.0.1:8000/logeos", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify(nuevoLog)
+          });
+
+          // if (!resLog.ok) {
+          //     const errorText = await resLog.text();
+          //     console.warn("Error al crear el log: " + errorText);
+          // }
+
+          alert("Sitio web actualizado correctamente");
+          form.reset();
+          btnActualizar.style.display = "none";
+          btnEliminar.style.display = "none";
+          form.querySelector("button[type='submit']").style.display = "inline-block";
+          await cargarSitios();
+
+      } catch (err) {
+          alert("Error: " + err.message);
+          console.error(err);
       }
+    });
 
-      alert("Sitio web actualizado");
-      form.reset();
-      btnActualizar.style.display = "none";
-      btnEliminar.style.display = "none";
-      form.querySelector("button[type='submit']").style.display = "inline-block";
-      await cargarSitios();
-    } catch (err) {
-      alert("Error: " + err.message);
-      console.error(err);
-    }
-
-
-    ////////////////////////////////////////////////
-    ///// CREAR LOG AL ACTUALIZAR SITIO
-    const sitioCreado = await resSitio.json();
-    const ahora = new Date();
-    const timestampHora = ahora.toTimeString().split(" ")[0]; // HH:MM:SS
-
-    const nuevoLog = {
-        id_sitio: sitioCreado.id,
-        estado: sitioCreado.estado,
-        tiempo_respuesta: 0, 
-        timestamp: timestampHora
-    };
-    
-    const resLog = await fetch("http://127.0.0.1:8000/logeos", { 
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(nuevoLog)
-      });
-
-      if (!resLog.ok) {
-          const errorText = await resLog.text();
-          throw new Error("Error al crear el log: " + errorText);
-      }
-
-      alert("Sitio y log actualizados correctamente");
-      form.reset();
-      await cargarSitios();
-
-  });
-
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ELIMINAR SITIOS 
     btnEliminar.addEventListener("click", async () => {
       const id = document.getElementById("sitioid").value;

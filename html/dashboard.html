@@ -74,15 +74,21 @@
                 </div>
             </div>
 
-            <div class="clientes">
-                <div class="clientes-titulo">
-                    <i class="fa-solid fa-users"></i> <h3>Clientes</h3>
+            <div class="control">
+                <div class="control-titulo">
+                    <i class="fa-solid fa-check-to-slot"></i><h3>Control Sitios</h3> <button type="button" id="buttonVer">Verificar estado</button>
                 </div>
-                <div class="textos">
-                    <p></p><p>Total</p>
-                    <p></p><p>Activos</p>
-                    <p></p><p>Inactivos</p>
+                <div class="control-form">
+                    <form action="" class="forms">
+                        <input type="number" id="idSitio" placeholder="Ingrese el ID del sitio a conocer el estado">
+                    </form>
                 </div>
+                <div id="resultados">
+                    <p id="resultados-textos">
+
+                    </p>
+                </div>
+                
             </div>
 
             
@@ -92,14 +98,15 @@
             <div class="adiv">
                 <div class="alertas-titulo">
                     <i class="fa-solid fa-triangle-exclamation"></i><h3>Alertas</h3>
+                    <span id="contadorAlertas" class="badge">0</span>
                 </div>
-                <div class="alertas-div">
-                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sunt placeat sint nam. Alias assumenda cum laboriosam, dolores, ex doloribus ut incidunt recusandae ipsam eos magni. Eius, nam. Aperiam, facilis quam?</p>
+                <div class="alertas-div" id="listaAlertas">
+                    <!-- Las alertas se cargarán aquí dinámicamente -->
+                    <div class="sin-alertas">No hay alertas activas</div>
                 </div>
-
             </div>
         </section>
-
+        
          <section id="sitios_web">
             <div class="sitios-titulo">
                 <i class="fa-solid fa-globe"></i>

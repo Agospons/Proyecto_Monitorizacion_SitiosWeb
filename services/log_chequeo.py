@@ -45,5 +45,3 @@ class LogService():
         self.db.commit()
         return 
     
-
-#LOGS_CHEQUEOS: id, sitio_id, estado, tiempo_respuesta, timestamp

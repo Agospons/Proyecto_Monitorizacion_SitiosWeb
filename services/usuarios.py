@@ -40,7 +40,6 @@ class UsuariosService():
         usuario.password = data.password        
         self.db.commit()
         return
-#USUARIOS: id, nombre, email, telefono, observaciones, fecha_alta
 
     def delete_usuarios(self, id: int):
        self.db.query(UsuariosModel).filter(UsuariosModel.id == id).delete()

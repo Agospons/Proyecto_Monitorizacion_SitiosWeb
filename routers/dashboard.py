@@ -12,7 +12,7 @@ dashboard_router = APIRouter()
     "/dashboard/admin",
     tags=["Dashboard"],
     response_model=DashboardStats,
-    #dependencies=[Depends(JWTBearer())]
+    dependencies=[Depends(JWTBearer())]
 )
 def obtener_dashboard_stats(db=Depends(get_database_session)):
     service = DashboardService(db)
@@ -21,11 +21,12 @@ def obtener_dashboard_stats(db=Depends(get_database_session)):
         "sitios_offline": service.sitios_offline(),
         "dominio_vencido": service.sitios_dominio_vencido(),
         "ultimos_usuarios": service.ultimos_usuarios_registrados(),
-        "web_no_online": service.web_no_online()
+        "web_no_online": service.web_no_online(), 
+        "alertas": service.return_alertas()
     }
 
 
-@dashboard_router.get("/dashboard/admin/{id}", tags=["Dashboard"], response_model=Dash)
+@dashboard_router.get("/dashboard/admin/{id}", tags=["Dashboard"], response_model=Dash, dependencies=[Depends(JWTBearer())])
 def sitiosWebHistorial(id: int, db=Depends(get_database_session)):
     logs = DashboardService(db).historial_sitios(id)
     if not logs:

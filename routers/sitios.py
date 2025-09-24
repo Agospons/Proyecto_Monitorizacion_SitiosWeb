@@ -19,19 +19,19 @@ hoy = date.today()
 
 sitios_routers = APIRouter()
 
-@sitios_routers.post("/sitios", tags=["Sitios"], response_model=dict, status_code=201)
+@sitios_routers.post("/sitios", tags=["Sitios"], response_model=dict, status_code=201, dependencies=[Depends(JWTBearer())])
 def crear_sitios(sitios: Sitios, db=Depends(get_database_session)) -> dict:
     SitiosService(db).create_Sitios(sitios)
     return JSONResponse(status_code=201, content={"message": "Se ha registrado el sitio web"})
 
 
-@sitios_routers.get("/sitios", tags=["Sitios"], response_model=List[sitiosOut], status_code=status.HTTP_200_OK)
+@sitios_routers.get("/sitios", tags=["Sitios"], response_model=List[sitiosOut], status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def get_sitios(db = Depends(get_database_session)):
     resultado = SitiosService(db).get_sitios()
     return resultado
 
 
-@sitios_routers.get("/sitios/{id}", tags=["Sitios"], response_model=sitiosOut, status_code=status.HTTP_200_OK)
+@sitios_routers.get("/sitios/{id}", tags=["Sitios"], response_model=sitiosOut, status_code=status.HTTP_200_OK, dependencies=[Depends(JWTBearer())])
 def get_sitios_id(id : int, db = Depends(get_database_session)):
     resultado = SitiosService(db).get_sitios_id(id)
     if not resultado:
@@ -39,7 +39,7 @@ def get_sitios_id(id : int, db = Depends(get_database_session)):
     return resultado
 
 
-@sitios_routers.put("/sitios/{id}", tags=["Sitios"], response_model=dict, status_code=201)
+@sitios_routers.put("/sitios/{id}", tags=["Sitios"], response_model=dict, status_code=201, dependencies=[Depends(JWTBearer())])
 def uptdate_sitio(id: int, sitios: Sitios, db=Depends(get_database_session))-> dict:
     resultado = SitiosService(db).get_sitios_id(id)
     if not resultado:
@@ -49,7 +49,7 @@ def uptdate_sitio(id: int, sitios: Sitios, db=Depends(get_database_session))-> d
 
 
 
-@sitios_routers.delete("/sitios/{id}", tags=["Sitios"], response_model=dict, status_code=201)
+@sitios_routers.delete("/sitios/{id}", tags=["Sitios"], response_model=dict, status_code=201, dependencies=[Depends(JWTBearer())])
 def eliminar_sitio(id: int, db=Depends(get_database_session)):
     result: SitiosModel = db.query(SitiosModel).filter(SitiosModel.id == id).first()
     if not result:
@@ -59,10 +59,7 @@ def eliminar_sitio(id: int, db=Depends(get_database_session)):
 
 
 
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
-
-
-@sitios_routers.get("/sitios/verificar/todos", tags=["Sitios"], response_model=List[dict], status_code=200)
+@sitios_routers.get("/sitios/verificar/todos", tags=["Sitios"], response_model=List[dict], status_code=200, dependencies=[Depends(JWTBearer())])
 def verificar_todos_los_sitios(db = Depends(get_database_session)):
     try:
         servicio = SitiosService(db)
@@ -72,7 +69,7 @@ def verificar_todos_los_sitios(db = Depends(get_database_session)):
         raise HTTPException(status_code=500, detail=f"Error al verificar sitios: {str(e)}")
 
 
-@sitios_routers.get("/sitios/verificar/{id}", tags=["Sitios"], response_model=dict, status_code=200)
+@sitios_routers.get("/sitios/verificar/{id}", tags=["Sitios"], response_model=dict, status_code=200, dependencies=[Depends(JWTBearer())])
 def verificar_sitio(id: int, db = Depends(get_database_session)):
     try:
         servicio = SitiosService(db)
