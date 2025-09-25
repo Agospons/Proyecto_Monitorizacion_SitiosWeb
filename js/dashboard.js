@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", async () => {
         saludo.textContent = `Bienvenido, ${usuario.nombre_completo}`;
     }
 
+    document.getElementById("cerrar").addEventListener("click", () => {
+        window.location.href = "index.html";
+        });
     const statsContainer = document.querySelector(".textos");
     const token = sessionStorage.getItem("token");
 
@@ -40,15 +43,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("btnS").addEventListener("click", () => {
         window.location.href = "crudSitios.html";
     });
-
     document.getElementById("cerrar").addEventListener("click", () => {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("usuario");
+        
         window.location.href = "index.html";
     });
-
-
     const tablaUsuarios = document.getElementById("usuariosTabla");
     
-    async function cargarUsuarios() {
+    
+    async function cargarUsuarios() {    //////////// carga todos los usuarios /////////
     try {
         const res = await fetchConAuth("http://127.0.0.1:8000/usuarios");
         if (!res.ok) throw new Error("No se pudieron obtener usuarios");
@@ -72,7 +76,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     }
 
-        // Listar últimos 5 usuarios registrados
+        //// lista últimos 5 usuarios registrados
     async function cargarUltimosUsuarios() {
     try {
         const res = await fetchConAuth("http://127.0.0.1:8000/dashboard/admin");
@@ -710,30 +714,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         listaAlertas.innerHTML = alertasHTML;
         console.log('✅ HTML de alertas generado correctamente');
     }
-
-    // async function mostrarAlertasHoy() {
-    //     try {
-    //         console.log('🚀 Iniciando carga de alertas...');
-            
-    //         // Primero hacer diagnóstico
-    //         await diagnosticarAlertas();
-            
-    //         // Luego obtener y mostrar alertas
-    //         const alertas = await obtenerAlertas();
-    //         mostrarAlertasEnHTML(alertas);
-            
-    //     } catch (error) {
-    //         console.error('💥 Error al mostrar alertas:', error);
-    //         mostrarError('Error al cargar alertas: ' + error.message);
-    //     }
-    // }
-
     async function mostrarTodasLasAlertasTemporalmente() {
         console.log('📋 Mostrando todas las alertas...');
         await mostrarAlertasHoy();
     }
 
-    // EJECUCIÓN PRINCIPAL AL CARGAR LA PÁGINA
     async function inicializarDashboard() {
         try {
             console.log('🎬 Inicializando dashboard...');
@@ -755,7 +740,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    // Configurar intervalos y ejecutar inicialización
     setInterval(cargarSitiosOffline, 30000);
     setInterval(async () => {
         console.log('🔄 Actualizando alertas automáticamente...');
@@ -764,7 +748,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     inicializarDashboard();
 
 
-    // Función principal para mostrar alertas
     async function mostrarAlertasHoy() {
         try {
             const alertas = await obtenerAlertas();

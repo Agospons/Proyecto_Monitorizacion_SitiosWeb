@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto cobro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="/js/crearUsuarioForm.js"></script>
+</head>
+<body>
+    <main>
+        <div class="contenedor">
+            <div class="title">
+                <img src="Captura_de_pantalla_1-9-2025_163111_-removebg-preview.png" height="100px">
+            </div>
+            <div class="loginC">
+                <div class="div">
+                    <a href="index.html" class="fa-solid fa-arrow-left"> </a> <h2>Crear usuario</h2>
+                </div>
+                
+                <form class="formC">
+                    <input type="text" id="nombre" placeholder="Nombre Completo" required minlength="2" maxlength="50" />
+                    <input type="number" id="telefono" placeholder="Telefono" required>
+                    <input type="email" id="emailC" placeholder="  Email" required />
+                    <input type="password" id="password1" placeholder="  Contraseña" required>
+                    <input type="password" id="password2" placeholder="  Confirmar contraseña" required>
+                    <button type="submit" class="btnC">Aceptar</button>
+                    
+                </form>
+            </div>
+            <p id="loginError" class="error" style="display: none;"></p>
+        </div>
+    </main>
+</body>
+</html>
